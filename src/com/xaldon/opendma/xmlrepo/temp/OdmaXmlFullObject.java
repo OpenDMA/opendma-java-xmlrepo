@@ -114,13 +114,14 @@ public class OdmaXmlFullObject extends OdmaXmlObject implements OdmaAssociation,
     }
 
     /**
-     * Returns the <code>Container</code> of this <code>Association</code> in which the containment is said to be contained.<br>
+     * Returns the <code>Container</code> of this <code>Association</code> in which the containable is said to be contained.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTAINER).getReference()</code>.
      * 
      * <p>Property <b>Container</b> (opendma): <b>Reference to Container (opendma)</b><br>
      * [SingleValue] [Writable] [Required]<br>
      * Full description follows.</p>
      * 
-     * @return the <code>Container</code> of this <code>Association</code> in which the containment is said to be contained
+     * @return the <code>Container</code> of this <code>Association</code> in which the containable is said to be contained
      */
     public OdmaContainer getContainer()
     {
@@ -143,7 +144,8 @@ public class OdmaXmlFullObject extends OdmaXmlObject implements OdmaAssociation,
     }
 
     /**
-     * Sets the <code>Container</code> of this <code>Association</code> in which the containment is said to be contained.<br>
+     * Sets the <code>Container</code> of this <code>Association</code> in which the containable is said to be contained.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTAINER).setValue(value)</code>.
      * 
      * <p>Property <b>Container</b> (opendma): <b>Reference to Container (opendma)</b><br>
      * [SingleValue] [Writable] [Required]<br>
@@ -170,18 +172,19 @@ public class OdmaXmlFullObject extends OdmaXmlObject implements OdmaAssociation,
 
     /**
      * Returns the <code>Containable</code> of this <code>Association</code> which is said to be contained in the container.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTAINABLE).getReference()</code>.
      * 
-     * <p>Property <b>Containment</b> (opendma): <b>Reference to Containable (opendma)</b><br>
+     * <p>Property <b>Containable</b> (opendma): <b>Reference to Containable (opendma)</b><br>
      * [SingleValue] [Writable] [Required]<br>
      * Full description follows.</p>
      * 
      * @return the <code>Containable</code> of this <code>Association</code> which is said to be contained in the container
      */
-    public OdmaContainable getContainment()
+    public OdmaContainable getContainable()
     {
         try
         {
-            return (OdmaContainable)getProperty(OdmaTypes.PROPERTY_CONTAINMENT).getReference();
+            return (OdmaContainable)getProperty(OdmaTypes.PROPERTY_CONTAINABLE).getReference();
         }
         catch(ClassCastException cce)
         {
@@ -199,19 +202,20 @@ public class OdmaXmlFullObject extends OdmaXmlObject implements OdmaAssociation,
 
     /**
      * Sets the <code>Containable</code> of this <code>Association</code> which is said to be contained in the container.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTAINABLE).setValue(value)</code>.
      * 
-     * <p>Property <b>Containment</b> (opendma): <b>Reference to Containable (opendma)</b><br>
+     * <p>Property <b>Containable</b> (opendma): <b>Reference to Containable (opendma)</b><br>
      * [SingleValue] [Writable] [Required]<br>
      * Full description follows.</p>
      * 
      * @throws OdmaAccessDeniedException
      *             if this property can not be set by the current user
      */
-    public void setContainment(OdmaContainable value) throws OdmaAccessDeniedException
+    public void setContainable(OdmaContainable value) throws OdmaAccessDeniedException
     {
         try
         {
-            getProperty(OdmaTypes.PROPERTY_CONTAINMENT).setValue(value);
+            getProperty(OdmaTypes.PROPERTY_CONTAINABLE).setValue(value);
         }
         catch(OdmaInvalidDataTypeException oidte)
         {
