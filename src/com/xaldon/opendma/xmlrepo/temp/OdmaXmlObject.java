@@ -343,6 +343,16 @@ public class OdmaXmlObject implements OdmaObject
         // we are not dirty, and will never be. Nothing to do here.
     }
 
+    /**
+     * Returns <code>true</code> if and only if the class of this object or one of its ancestors equals
+     * the given name or the class of this object or one of its ancestors incorporates the aspect with
+     * the given name.
+     * 
+     * @param classOrAspectName
+     *             the qualified name of the class or aspect to test for
+     * 
+     * @return if the class of this object is or extends the given class or incorportes the given aspect
+     */
     public boolean instanceOf(OdmaQName classOrAspectName)
     {
         OdmaClass test = getOdmaClass();
