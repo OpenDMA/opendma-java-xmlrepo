@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.opendma.Adaptor;
-import org.opendma.OdmaSession;
+import org.opendma.api.OdmaSession;
 import org.opendma.exceptions.OdmaException;
 
 import com.xaldon.opendma.xmlrepo.exceptions.OdmaXmlRepositoryException;
@@ -14,7 +14,6 @@ public class NonRegisteringAdaptor implements Adaptor
 
     public OdmaSession connect(Properties info) throws OdmaException
     {
-        // try to create new CEDomainSession
         try
         {
             XmlRepositorySession session = new XmlRepositorySession(info);

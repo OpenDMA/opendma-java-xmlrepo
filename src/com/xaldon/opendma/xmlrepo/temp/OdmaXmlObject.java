@@ -2,10 +2,11 @@ package com.xaldon.opendma.xmlrepo.temp;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
-import org.opendma.OdmaTypes;
 import org.opendma.api.OdmaClass;
+import org.opendma.api.OdmaCommonNames;
 import org.opendma.api.OdmaGuid;
 import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaObject;
@@ -13,11 +14,10 @@ import org.opendma.api.OdmaProperty;
 import org.opendma.api.OdmaPropertyInfo;
 import org.opendma.api.OdmaQName;
 import org.opendma.api.OdmaRepository;
-import org.opendma.api.collections.OdmaClassEnumeration;
-import org.opendma.api.collections.OdmaPropertyInfoEnumeration;
+import org.opendma.api.OdmaType;
 import org.opendma.exceptions.OdmaAccessDeniedException;
 import org.opendma.exceptions.OdmaInvalidDataTypeException;
-import org.opendma.exceptions.OdmaObjectNotFoundException;
+import org.opendma.exceptions.OdmaPropertyNotFoundException;
 import org.opendma.exceptions.OdmaRuntimeException;
 import org.opendma.impl.OdmaPropertyImpl;
 
@@ -41,26 +41,26 @@ public class OdmaXmlObject implements OdmaObject
     {
         properties = props;
         // validate presence of required OpenDMA properties
-        if(!properties.containsKey(OdmaTypes.PROPERTY_CLASS))
+        if(!properties.containsKey(OdmaCommonNames.PROPERTY_CLASS))
         {
-            throw new IllegalArgumentException("Missing property: "+OdmaTypes.PROPERTY_CLASS);
+            throw new IllegalArgumentException("Missing property: "+OdmaCommonNames.PROPERTY_CLASS);
         }
-        if(!properties.containsKey(OdmaTypes.PROPERTY_ID))
+        if(!properties.containsKey(OdmaCommonNames.PROPERTY_ID))
         {
-            throw new IllegalArgumentException("Missing property: "+OdmaTypes.PROPERTY_ID);
+            throw new IllegalArgumentException("Missing property: "+OdmaCommonNames.PROPERTY_ID);
         }
-        if(!properties.containsKey(OdmaTypes.PROPERTY_GUID))
+        if(!properties.containsKey(OdmaCommonNames.PROPERTY_GUID))
         {
-            throw new IllegalArgumentException("Missing property: "+OdmaTypes.PROPERTY_GUID);
+            throw new IllegalArgumentException("Missing property: "+OdmaCommonNames.PROPERTY_GUID);
         }
-        if(!properties.containsKey(OdmaTypes.PROPERTY_REPOSITORY))
+        if(!properties.containsKey(OdmaCommonNames.PROPERTY_REPOSITORY))
         {
-            throw new IllegalArgumentException("Missing property: "+OdmaTypes.PROPERTY_REPOSITORY);
+            throw new IllegalArgumentException("Missing property: "+OdmaCommonNames.PROPERTY_REPOSITORY);
         }
         // get the class of this object
         try
         {
-            cls = (OdmaClass)props.get(OdmaTypes.PROPERTY_CLASS).getReference();
+            cls = (OdmaClass)props.get(OdmaCommonNames.PROPERTY_CLASS).getReference();
         }
         catch(Exception e)
         {
@@ -87,79 +87,56 @@ public class OdmaXmlObject implements OdmaObject
             objectId = "(id-missing)";
         }
         // get the list of effective properties from class
-        OdmaPropertyInfoEnumeration propertyInfos = cls.getProperties();
+        Iterable<OdmaPropertyInfo> propertyInfos = cls.getProperties();
         if(propertyInfos == null)
         {
             throw new OdmaRuntimeException("Implementation error: missing property infos at class");
         }
         // validate all properties
-        Iterator<?> itPropertyInfos = propertyInfos.iterator();
-        while(itPropertyInfos.hasNext())
+        for(OdmaPropertyInfo pi : propertyInfos)
         {
-            OdmaPropertyInfo pi = (OdmaPropertyInfo)itPropertyInfos.next();
             OdmaQName pname = pi.getQName();
             OdmaProperty prop = (OdmaProperty)properties.get(pname);
-            // validate property existance
-            if(pi.getRequired().booleanValue())
+            // if property is missing, generate a property with NULL value
+            if(prop == null)
             {
-                if(prop == null)
+                if(pi.isRequired() && enforceRequired)
                 {
-                    if(enforceRequired)
-                    {
-                        throw new OdmaXmlRepositoryException("Required property missing: "+pname+" at "+objectId);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            prop = new OdmaPropertyImpl(pname,null,pi.getDataType().intValue(),pi.getMultiValue().booleanValue(),pi.getReadOnly().booleanValue());
-                            properties.put(pname,prop);
-                        }
-                        catch(OdmaInvalidDataTypeException e)
-                        {
-                            throw new OdmaRuntimeException("Implementation error",e);
-                        }
-                    }
+                    throw new OdmaXmlRepositoryException("Required property missing: "+pname+" at "+objectId);
+                }
+                try
+                {
+                    prop = new OdmaPropertyImpl(pname,null,OdmaType.fromNumericId(pi.getDataType()),pi.isMultiValue().booleanValue(),pi.isReadOnly().booleanValue());
+                    properties.put(pname,prop);
+                }
+                catch(OdmaInvalidDataTypeException e)
+                {
+                    throw new OdmaRuntimeException("Implementation error",e);
                 }
             }
-            else
+            // validate property data type
+            int definedDataType = pi.getDataType();
+            if( allowUnevaluatedReferences && (definedDataType == OdmaType.REFERENCE.getNumericId()) )
             {
-                if(prop == null)
-                {
-                    try
-                    {
-                        prop = new OdmaPropertyImpl(pname,null,pi.getDataType().intValue(),pi.getMultiValue().booleanValue(),pi.getReadOnly().booleanValue());
-                        properties.put(pname,prop);
-                    }
-                    catch(OdmaInvalidDataTypeException e)
-                    {
-                        throw new OdmaRuntimeException("Implementation error",e);
-                    }
-                }
-            }
-            // validate property datatype
-            int definedDataType = pi.getDataType().intValue();
-            if( allowUnevaluatedReferences && (definedDataType == OdmaTypes.TYPE_REFERENCE) )
-            {
-                if(! ( (prop instanceof UnevaluatedReferenceProperty) || (prop.getType() == OdmaTypes.TYPE_REFERENCE) ) )
+                if(! ( (prop instanceof UnevaluatedReferenceProperty) || (prop.getType() == OdmaType.REFERENCE) ) )
                 {
                     throw new OdmaXmlRepositoryException("Property datatype mismatch for property "+pname+" at "+objectId);
                 }
             }
             else
             {
-                if(prop.getType() != definedDataType)
+                if(prop.getType().getNumericId() != definedDataType)
                 {
                     throw new OdmaXmlRepositoryException("Property datatype mismatch for property "+pname+" at "+objectId);
                 }
             }
             // validate property cardinality
-            if(prop.isMultiValue() != pi.getMultiValue().booleanValue())
+            if(prop.isMultiValue() != pi.isMultiValue())
             {
                 throw new OdmaXmlRepositoryException("Property cardinality mismatch for property "+pname+" at "+objectId);
             }
             // check writability
-            if(pi.getReadOnly().booleanValue() && (!prop.isReadOnly()))
+            if(pi.isReadOnly().booleanValue() && (!prop.isReadOnly()))
             {
                 throw new OdmaXmlRepositoryException("Class defines read only property but property is writavble: "+pname+" at "+objectId);
             }
@@ -171,79 +148,51 @@ public class OdmaXmlObject implements OdmaObject
         // nothing to do here for OdmaObject
     }
 
-    protected void resolveIds(HashMap<String, OdmaObject> objects) throws OdmaXmlRepositoryException
+    protected void resolveIds(HashMap<OdmaId, OdmaObject> objects) throws OdmaXmlRepositoryException
     {
         staticResolveIds(properties,objects);
     }
 
-    protected static void staticResolveIds(Map<OdmaQName, OdmaProperty> properties, HashMap<String, OdmaObject> objects) throws OdmaXmlRepositoryException
+    protected static void staticResolveIds(Map<OdmaQName, OdmaProperty> properties, HashMap<OdmaId, OdmaObject> objects) throws OdmaXmlRepositoryException
     {
-        Iterator<OdmaQName> it = properties.keySet().iterator();
-        while(it.hasNext())
+        for(Map.Entry<OdmaQName, OdmaProperty> propertiesEntry : properties.entrySet())
         {
-            OdmaQName propName = it.next();
-            OdmaProperty prop = properties.get(propName);
+            OdmaProperty prop = propertiesEntry.getValue();
             if(prop instanceof UnevaluatedReferenceProperty)
             {
-                if(prop.isMultiValue())
+                try
                 {
-                    OdmaXmlMultipleObjectEnumeration referencedObjectsEnumeration = new OdmaXmlMultipleObjectEnumeration();
-                    Iterator<?> itIds;
-                    try
+                    if(prop.isMultiValue())
                     {
-                        itIds = prop.getIdList().iterator();
-                    }
-                    catch(OdmaInvalidDataTypeException e)
-                    {
-                        throw new OdmaRuntimeException("Implementation error",e);
-                    }
-                    while(itIds.hasNext())
-                    {
-                        OdmaId id = (OdmaId)itIds.next();
-                        OdmaObject referencedObject = objects.get(id.toString());
-                        if(referencedObject == null)
+                        LinkedList<OdmaObject> resolvedList = new LinkedList<OdmaObject>();
+                        for(OdmaId objRef : prop.getIdList())
                         {
-                            throw new OdmaXmlRepositoryException("Reference to non existing object ID "+id);
+                            OdmaObject referencedObject = objects.get(objRef);
+                            if(referencedObject == null)
+                            {
+                                throw new OdmaXmlRepositoryException("Reference to non existing object ID "+objRef);
+                            }
+                            resolvedList.add(referencedObject);
                         }
-                        referencedObjectsEnumeration.add(referencedObject);
+                        propertiesEntry.setValue(new OdmaPropertyImpl(propertiesEntry.getKey(),resolvedList,OdmaType.REFERENCE,true,true));
                     }
-                    try
+                    else
                     {
-                        properties.put(propName,new OdmaPropertyImpl(propName,referencedObjectsEnumeration,OdmaTypes.TYPE_REFERENCE,true,true));
-                    }
-                    catch(OdmaInvalidDataTypeException e)
-                    {
-                        throw new OdmaRuntimeException("Implementation error",e);
+                        OdmaObject resolvedObject =  null;
+                        if(prop.getId() != null)
+                        {
+                            resolvedObject = objects.get(prop.getId());
+                            if(resolvedObject == null)
+                            {
+                                throw new OdmaXmlRepositoryException("Reference to non existing object ID "+prop.getId());
+                            }
+                        }
+                        propertiesEntry.setValue(new OdmaPropertyImpl(propertiesEntry.getKey(),resolvedObject,OdmaType.REFERENCE,false,true));
                     }
                 }
-                else
+                catch(OdmaInvalidDataTypeException e)
                 {
-                    OdmaId id;
-                    try
-                    {
-                        id = prop.getId();
-                    }
-                    catch(OdmaInvalidDataTypeException e)
-                    {
-                        throw new OdmaRuntimeException("Implementation error",e);
-                    }
-                    if(id == null)
-                    {
-                        throw new OdmaRuntimeException("ID must not be empty");
-                    }
-                    OdmaObject referencedObject = (OdmaObject)objects.get(id.toString());
-                    if(referencedObject == null)
-                    {
-                        throw new OdmaXmlRepositoryException("Reference to non existing object ID "+id);
-                    }
-                    try
-                    {
-                        properties.put(propName,new OdmaPropertyImpl(propName,referencedObject,OdmaTypes.TYPE_REFERENCE,false,true));
-                    }
-                    catch(OdmaInvalidDataTypeException e)
-                    {
-                        throw new OdmaRuntimeException("Implementation error",e);
-                    }
+                    throw new OdmaRuntimeException("Implementation error",e);
                 }
             }
         }
@@ -254,30 +203,26 @@ public class OdmaXmlObject implements OdmaObject
         return properties;
     }
 
-    // =============================================================================================
-    // Generic property access
-    // =============================================================================================
+    // ----- Generic property access ---------------------------------------------------------------
 
     /**
-     * Returns an <code>{@link OdmaProperty}</code> for the property identified by the given qualified name. The named
-     * property is automatically retrieved from the server if it is not yet in the local cache. So it is wise to call
-     * the method <code>{@link #prepareProperties(OdmaQName[], boolean)}</code> at first if you are interested in
-     * multiple properties to reduce the number of round trips to the server.
+     * Returns an <code>{@link OdmaProperty}</code> for the property identified by the given qualified name.
+     * The named property is automatically retrieved from the server if it is not yet in the local cache.
+     * To optimize performance, consider calling <code>{@link #prepareProperties(OdmaQName[], boolean)}</code>
+     * first when accessing multiple properties.
      * 
      * @param propertyName
      *            the qualified name of the property to return
      * 
      * @return an <code>{@link OdmaProperty}</code> for the property identified by the given qualified name.
      * 
-     * @throws OdmaObjectNotFoundException
-     *             if and only if the given qualified name does not identify a property in the list of effective
-     *             properties of the class of this object
+     * @throws OdmaPropertyNotFoundException
+     *             Thrown if the given qualified name does not identify a property in the effective properties of the class of this object.
      */
-    public OdmaProperty getProperty(OdmaQName propertyName) throws OdmaObjectNotFoundException
-    {
+    public OdmaProperty getProperty(OdmaQName propertyName) throws OdmaPropertyNotFoundException {
         OdmaProperty p = properties.get(propertyName);
         if(p == null)
-            throw new OdmaObjectNotFoundException(propertyName);
+            throw new OdmaPropertyNotFoundException(propertyName);
         return p;
     }
 
@@ -294,9 +239,8 @@ public class OdmaXmlObject implements OdmaObject
      * @param refresh
      *            flag to indicate if the properties should also be retrieved if they are already in the local cache.
      */
-    public void prepareProperties(OdmaQName[] propertyNames, boolean refresh)
-    {
-        // do nothing here. We are static and all static properties are already in the Map
+    public void prepareProperties(OdmaQName[] propertyNames, boolean refresh) {
+        // nothing to do here
     }
 
     /**
@@ -310,7 +254,7 @@ public class OdmaXmlObject implements OdmaObject
      * @param newValue
      *            the new value to set the named property to
      * 
-     * @throws OdmaObjectNotFoundException
+     * @throws OdmaPropertyNotFoundException
      *             if and only if the given qualified name does not identify a property in the list of effective
      *             properties of the class of this object
      * @throws OdmaInvalidDataTypeException
@@ -318,9 +262,7 @@ public class OdmaXmlObject implements OdmaObject
      * @throws OdmaAccessDeniedException
      *             if this property can not be set by the current user
      */
-    public void setProperty(OdmaQName propertyName, Object newValue) throws OdmaObjectNotFoundException, OdmaInvalidDataTypeException, OdmaAccessDeniedException
-    {
-        // we are static. properties can not be changed.
+    public void setProperty(OdmaQName propertyName, Object newValue) throws OdmaPropertyNotFoundException, OdmaInvalidDataTypeException, OdmaAccessDeniedException {
         throw new OdmaAccessDeniedException();
     }
 
@@ -329,18 +271,15 @@ public class OdmaXmlObject implements OdmaObject
      * 
      * @return true if there are pending changes that have not yet been persisted
      */
-    public boolean isDirty()
-    {
-        // we are static. properties can not be changed.
+    public boolean isDirty() {
         return false;
     }
 
     /**
      * Persist the current pending changes to properties at the server.
      */
-    public void save()
-    {
-        // we are not dirty, and will never be. Nothing to do here.
+    public void save() {
+        // nothing to do here
     }
 
     /**
@@ -353,144 +292,122 @@ public class OdmaXmlObject implements OdmaObject
      * 
      * @return if the class of this object is or extends the given class or incorportes the given aspect
      */
-    public boolean instanceOf(OdmaQName classOrAspectName)
-    {
+    public boolean instanceOf(OdmaQName classOrAspectName) {
         OdmaClass test = getOdmaClass();
-        while(test != null)
-        {
-            if(test.getQName().equals(classOrAspectName))
-            {
+        while(test != null) {
+            if(test.getQName().equals(classOrAspectName)) {
                 return true;
             }
-            OdmaClassEnumeration aspects = test.getAspects();
-            if(aspects != null)
-            {
-                Iterator<?> itAspects = aspects.iterator();
-                while(itAspects.hasNext())
-                {
-                    OdmaClass declaredAspect = (OdmaClass)itAspects.next();
-                    if(declaredAspect.getQName().equals(classOrAspectName))
-                    {
+            Iterable<OdmaClass> aspects = test.getAspects();
+            if(aspects != null) {
+                Iterator<OdmaClass> itAspects = aspects.iterator();
+                while(itAspects.hasNext()) {
+                    OdmaClass declaredAspect = itAspects.next();
+                    if(declaredAspect.getQName().equals(classOrAspectName)) {
                         return true;
                     }
                 }
             }
-            test = test.getParent();
+            test = test.getSuperClass();
         }
         return false;
     }
 
-    // =============================================================================================
-    // Object specific property access
-    // =============================================================================================
+    // ----- Object specific property access -------------------------------------------------------
 
     // CHECKTEMPLATE: the following code has most likely been copied from a class template. Make sure to keep this code up to date!
     // The following template code is available as OdmaObjectTemplate
 
     /**
      * Returns the OpenDMA <code>Class</code> describing this <code>Object</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CLASS).getReference()</code>.
      * 
-     * <p>Property <b>Class</b> (opendma): <b>Reference to Class (opendma)</b><br>
-     * [SingleValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>Class</b> (opendma): <b>Reference to Class (opendma)</b><br/>
+     * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return the OpenDMA <code>Class</code> describing this <code>Object</code>
      */
-    public OdmaClass getOdmaClass()
-    {
-        try
-        {
-            return (OdmaClass)getProperty(OdmaTypes.PROPERTY_CLASS).getReference();
+    public OdmaClass getOdmaClass() {
+        try {
+            return (OdmaClass)getProperty(OdmaCommonNames.PROPERTY_CLASS).getReference();
         }
-        catch(ClassCastException cce)
-        {
+        catch(ClassCastException cce) {
             throw new OdmaRuntimeException("Invalid data type of system property",cce);
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }
 
     /**
      * Returns the <i>unique object identifier</i> identifying this <code>Object</code> inside its <code>Repository</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_ID).getId()</code>.
      * 
-     * <p>Property <b>Id</b> (opendma): <b>String</b><br>
-     * [SingleValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>Id</b> (opendma): <b>String</b><br/>
+     * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return the <i>unique object identifier</i> identifying this <code>Object</code> inside its <code>Repository</code>
      */
-    public OdmaId getId()
-    {
-        try
-        {
-            return getProperty(OdmaTypes.PROPERTY_ID).getId();
+    public OdmaId getId() {
+        try {
+            return getProperty(OdmaCommonNames.PROPERTY_ID).getId();
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }
 
     /**
      * Returns the <i>global unique object identifier</i> globally identifying this <code>Object</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_GUID).getGuid()</code>.
      * 
-     * <p>Property <b>Guid</b> (opendma): <b>String</b><br>
-     * [SingleValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>Guid</b> (opendma): <b>String</b><br/>
+     * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return the <i>global unique object identifier</i> globally identifying this <code>Object</code>
      */
-    public OdmaGuid getGuid()
-    {
-        try
-        {
-            return getProperty(OdmaTypes.PROPERTY_GUID).getGuid();
+    public OdmaGuid getGuid() {
+        try {
+            return getProperty(OdmaCommonNames.PROPERTY_GUID).getGuid();
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }
 
     /**
      * Returns the OpenDMA <code>Repository</code> where this <code>Object</code> resides.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_REPOSITORY).getReference()</code>.
      * 
-     * <p>Property <b>Repository</b> (opendma): <b>Reference to Repository (opendma)</b><br>
-     * [SingleValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>Repository</b> (opendma): <b>Reference to Repository (opendma)</b><br/>
+     * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return the OpenDMA <code>Repository</code> where this <code>Object</code> resides
      */
-    public OdmaRepository getRepository()
-    {
-        try
-        {
-            return (OdmaRepository)getProperty(OdmaTypes.PROPERTY_REPOSITORY).getReference();
+    public OdmaRepository getRepository() {
+        try {
+            return (OdmaRepository)getProperty(OdmaCommonNames.PROPERTY_REPOSITORY).getReference();
         }
-        catch(ClassCastException cce)
-        {
+        catch(ClassCastException cce) {
             throw new OdmaRuntimeException("Invalid data type of system property",cce);
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }

@@ -3,15 +3,14 @@ package com.xaldon.opendma.xmlrepo.temp;
 import java.util.Date;
 import java.util.Map;
 
-import org.opendma.OdmaTypes;
 import org.opendma.api.OdmaAssociation;
+import org.opendma.api.OdmaCommonNames;
 import org.opendma.api.OdmaDocument;
 import org.opendma.api.OdmaProperty;
 import org.opendma.api.OdmaQName;
 import org.opendma.api.OdmaVersionCollection;
-import org.opendma.api.collections.OdmaDocumentEnumeration;
 import org.opendma.exceptions.OdmaInvalidDataTypeException;
-import org.opendma.exceptions.OdmaObjectNotFoundException;
+import org.opendma.exceptions.OdmaPropertyNotFoundException;
 import org.opendma.exceptions.OdmaRuntimeException;
 
 import com.xaldon.opendma.xmlrepo.exceptions.OdmaXmlRepositoryException;
@@ -31,175 +30,152 @@ public class OdmaXmlVersionCollection extends OdmaXmlObject implements OdmaVersi
         super(properties);
     }
 
-    // =============================================================================================
-    // Object specific property access
-    // =============================================================================================
+    // ----- Object specific property access -------------------------------------------------------
 
     // CHECKTEMPLATE: the following code has most likely been copied from a class template. Make sure to keep this code up to date!
     // The following template code is available as OdmaVersionCollectionTemplate
 
     /**
      * Returns collection of all versions of the <code>Document</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_VERSIONS).getReferenceIterable()</code>.
      * 
-     * <p>Property <b>Versions</b> (opendma): <b>Reference to Document (opendma)</b><br>
-     * [MultiValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>Versions</b> (opendma): <b>Reference to Document (opendma)</b><br/>
+     * [MultiValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return collection of all versions of the <code>Document</code>
      */
-    public OdmaDocumentEnumeration getVersions()
-    {
-        try
-        {
-            return (OdmaDocumentEnumeration)getProperty(OdmaTypes.PROPERTY_VERSIONS).getReferenceEnumeration();
+     @SuppressWarnings("unchecked")
+    public Iterable<OdmaDocument> getVersions() {
+        try {
+            return (Iterable<OdmaDocument>)getProperty(OdmaCommonNames.PROPERTY_VERSIONS).getReferenceIterable();
         }
-        catch(ClassCastException cce)
-        {
+        catch(ClassCastException cce) {
             throw new OdmaRuntimeException("Invalid data type of system property",cce);
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }
 
     /**
      * Returns the latest version of this <code>Document</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_LATEST).getReference()</code>.
      * 
-     * <p>Property <b>Latest</b> (opendma): <b>Reference to Document (opendma)</b><br>
-     * [SingleValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>Latest</b> (opendma): <b>Reference to Document (opendma)</b><br/>
+     * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return the latest version of this <code>Document</code>
      */
-    public OdmaDocument getLatest()
-    {
-        try
-        {
-            return (OdmaDocument)getProperty(OdmaTypes.PROPERTY_LATEST).getReference();
+    public OdmaDocument getLatest() {
+        try {
+            return (OdmaDocument)getProperty(OdmaCommonNames.PROPERTY_LATEST).getReference();
         }
-        catch(ClassCastException cce)
-        {
+        catch(ClassCastException cce) {
             throw new OdmaRuntimeException("Invalid data type of system property",cce);
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }
 
     /**
      * Returns the last released version of this <code>Document</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_RELEASED).getReference()</code>.
      * 
-     * <p>Property <b>Released</b> (opendma): <b>Reference to Document (opendma)</b><br>
-     * [SingleValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>Released</b> (opendma): <b>Reference to Document (opendma)</b><br/>
+     * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return the last released version of this <code>Document</code>
      */
-    public OdmaDocument getReleased()
-    {
-        try
-        {
-            return (OdmaDocument)getProperty(OdmaTypes.PROPERTY_RELEASED).getReference();
+    public OdmaDocument getReleased() {
+        try {
+            return (OdmaDocument)getProperty(OdmaCommonNames.PROPERTY_RELEASED).getReference();
         }
-        catch(ClassCastException cce)
-        {
+        catch(ClassCastException cce) {
             throw new OdmaRuntimeException("Invalid data type of system property",cce);
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }
 
     /**
      * Returns the version of this <code>Document</code> currently beeing worked on during a checkout. Only valid if and only if the corresponding <code>Document</code> is checked out..<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_INPROGRESS).getReference()</code>.
      * 
-     * <p>Property <b>InProgress</b> (opendma): <b>Reference to Document (opendma)</b><br>
-     * [SingleValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>InProgress</b> (opendma): <b>Reference to Document (opendma)</b><br/>
+     * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return the version of this <code>Document</code> currently beeing worked on during a checkout. Only valid if and only if the corresponding <code>Document</code> is checked out.
      */
-    public OdmaDocument getInProgress()
-    {
-        try
-        {
-            return (OdmaDocument)getProperty(OdmaTypes.PROPERTY_INPROGRESS).getReference();
+    public OdmaDocument getInProgress() {
+        try {
+            return (OdmaDocument)getProperty(OdmaCommonNames.PROPERTY_INPROGRESS).getReference();
         }
-        catch(ClassCastException cce)
-        {
+        catch(ClassCastException cce) {
             throw new OdmaRuntimeException("Invalid data type of system property",cce);
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }
 
     /**
      * Returns the date when this <code>Document</code> has been created.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CREATEDAT).getDateTime()</code>.
      * 
-     * <p>Property <b>CreatedAt</b> (opendma): <b>DateTime</b><br>
-     * [SingleValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>CreatedAt</b> (opendma): <b>DateTime</b><br/>
+     * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return the date when this <code>Document</code> has been created
      */
-    public Date getCreatedAt()
-    {
-        try
-        {
-            return getProperty(OdmaTypes.PROPERTY_CREATEDAT).getDateTime();
+    public Date getCreatedAt() {
+        try {
+            return getProperty(OdmaCommonNames.PROPERTY_CREATEDAT).getDateTime();
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }
 
     /**
      * Returns the user who has created this <code>Document</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CREATEDBY).getString()</code>.
      * 
-     * <p>Property <b>CreatedBy</b> (opendma): <b>String</b><br>
-     * [SingleValue] [ReadOnly] [Required]<br>
+     * <p>Property <b>CreatedBy</b> (opendma): <b>String</b><br/>
+     * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
      * @return the user who has created this <code>Document</code>
      */
-    public String getCreatedBy()
-    {
-        try
-        {
-            return getProperty(OdmaTypes.PROPERTY_CREATEDBY).getString();
+    public String getCreatedBy() {
+        try {
+            return getProperty(OdmaCommonNames.PROPERTY_CREATEDBY).getString();
         }
-        catch(OdmaInvalidDataTypeException oidte)
-        {
+        catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
         }
-        catch(OdmaObjectNotFoundException oonfe)
-        {
+        catch(OdmaPropertyNotFoundException oonfe) {
             throw new OdmaRuntimeException("Predefined system property missing",oonfe);
         }
     }

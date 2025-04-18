@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,32 +16,20 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.opendma.OdmaTypes;
 import org.opendma.api.OdmaClass;
+import org.opendma.api.OdmaCommonNames;
 import org.opendma.api.OdmaGuid;
 import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaObject;
 import org.opendma.api.OdmaProperty;
 import org.opendma.api.OdmaQName;
 import org.opendma.api.OdmaRepository;
-import org.opendma.api.collections.OdmaClassEnumeration;
-import org.opendma.api.collections.OdmaIdList;
+import org.opendma.api.OdmaType;
 import org.opendma.exceptions.OdmaAccessDeniedException;
 import org.opendma.exceptions.OdmaInvalidDataTypeException;
 import org.opendma.exceptions.OdmaObjectNotFoundException;
 import org.opendma.exceptions.OdmaRuntimeException;
 import org.opendma.impl.OdmaPropertyImpl;
-import org.opendma.impl.collections.ArrayBlobList;
-import org.opendma.impl.collections.ArrayBooleanList;
-import org.opendma.impl.collections.ArrayDateTimeList;
-import org.opendma.impl.collections.ArrayDoubleList;
-import org.opendma.impl.collections.ArrayFloatList;
-import org.opendma.impl.collections.ArrayIntegerList;
-import org.opendma.impl.collections.ArrayLongList;
-import org.opendma.impl.collections.ArrayOdmaContentList;
-import org.opendma.impl.collections.ArrayOdmaIdList;
-import org.opendma.impl.collections.ArrayShortList;
-import org.opendma.impl.collections.ArrayStringList;
 import org.opendma.impl.core.OdmaStaticClassHierarchy;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -55,7 +42,7 @@ import com.xaldon.opendma.xmlrepo.exceptions.OdmaXmlRepositoryException;
 public class XmlRepositoryManager
 {
     
-    protected HashMap<String, OdmaObject> objects = new HashMap<String, OdmaObject>();
+    protected HashMap<OdmaId, OdmaObject> objects = new HashMap<OdmaId, OdmaObject>();
     
     protected HashMap<OdmaQName, OdmaClass> classes = new HashMap<OdmaQName, OdmaClass>();
     
@@ -74,25 +61,27 @@ public class XmlRepositoryManager
         Document descriptionDocument;
         try
         {
-            DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        	dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        	dbf.setXIncludeAware(false);
+            DocumentBuilder docBuilder = dbf.newDocumentBuilder();
             descriptionDocument = docBuilder.parse(in);
-            in.close();
         }
         catch(ParserConfigurationException e)
         {
-            throw new OdmaXmlRepositoryException("Error reading input XML file",e);
+            throw new OdmaXmlRepositoryException("Error reading input XML file", e);
         }
         catch(FactoryConfigurationError e)
         {
-            throw new OdmaXmlRepositoryException("Error reading input XML file",e);
+            throw new OdmaXmlRepositoryException("Error reading input XML file", e);
         }
         catch(SAXException e)
         {
-            throw new OdmaXmlRepositoryException("Error reading input XML file",e);
+            throw new OdmaXmlRepositoryException("Error reading input XML file", e);
         }
         catch(IOException e)
         {
-            throw new OdmaXmlRepositoryException("Error reading input XML file",e);
+            throw new OdmaXmlRepositoryException("Error reading input XML file", e);
         }
         parseRepository(descriptionDocument.getDocumentElement());
     }
@@ -112,11 +101,15 @@ public class XmlRepositoryManager
     
     public static final String ATTRIBUTENAME_REPOSITORYOBJECTID = "repositoryObjectId";
     
-    public static final String ATTRIBUTENAME_CLASSQUALIFIER = "classQualifier";
+    public static final String ATTRIBUTENAME_CLASSQUALIFIER_DEPRECATED = "classQualifier";
+    
+    public static final String ATTRIBUTENAME_CLASSNAMESPACE = "classNamespace";
     
     public static final String ATTRIBUTENAME_CLASSNAME = "className";
     
-    public static final String ATTRIBUTENAME_QUALIFIER = "qualifier";
+    public static final String ATTRIBUTENAME_QUALIFIER_DEPRECATED = "qualifier";
+    
+    public static final String ATTRIBUTENAME_NAMESPACE = "namespace";
     
     public static final String ATTRIBUTENAME_NAME = "name";
     
@@ -124,22 +117,22 @@ public class XmlRepositoryManager
     
     public static final String ATTRIBUTENAME_MULTIVALUE = "multiValue";
 
-    protected static Map<String, Integer> datatypeValues = new HashMap<String, Integer>();
+    protected static Map<String, OdmaType> datatypeValues = new HashMap<String, OdmaType>();
     
     static
     {
-        datatypeValues.put("string",new Integer(1));
-        datatypeValues.put("integer",new Integer(2));
-        datatypeValues.put("short",new Integer(3));
-        datatypeValues.put("long",new Integer(4));
-        datatypeValues.put("float",new Integer(5));
-        datatypeValues.put("double",new Integer(6));
-        datatypeValues.put("boolean",new Integer(7));
-        datatypeValues.put("datetime",new Integer(8));
-        datatypeValues.put("blob",new Integer(9));
-        datatypeValues.put("reference",new Integer(10));
-        datatypeValues.put("content",new Integer(11));
-        datatypeValues.put("id",new Integer(100));
+        datatypeValues.put("string",OdmaType.STRING);
+        datatypeValues.put("integer",OdmaType.INTEGER);
+        datatypeValues.put("short",OdmaType.SHORT);
+        datatypeValues.put("long",OdmaType.LONG);
+        datatypeValues.put("float",OdmaType.LONG);
+        datatypeValues.put("double",OdmaType.DOUBLE);
+        datatypeValues.put("boolean",OdmaType.BOOLEAN);
+        datatypeValues.put("datetime",OdmaType.DATETIME);
+        datatypeValues.put("blob",OdmaType.BLOB);
+        datatypeValues.put("reference",OdmaType.REFERENCE);
+        datatypeValues.put("content",OdmaType.CONTENT);
+        datatypeValues.put("id",OdmaType.ID);
     }
     
     protected void parseRepository(Element rootElement) throws OdmaXmlRepositoryException
@@ -182,14 +175,15 @@ public class XmlRepositoryManager
     
     public OdmaObject getObject(OdmaId id) throws OdmaObjectNotFoundException
     {
-        OdmaObject obj = objects.get(id.toString());
+        OdmaObject obj = objects.get(id);
         if(obj == null)
         {
-            throw new OdmaObjectNotFoundException(id);
+            throw new OdmaObjectNotFoundException(new OdmaGuid(repository.getId(), id));
         }
         return obj;
     }
     
+    @SuppressWarnings("unchecked")
     protected void buildObjects(ArrayList<OdmaXmlObjectData> objectDatas, String repositoryObjectId) throws OdmaXmlRepositoryException
     {
         boolean duplicateIdContinue = true;
@@ -222,7 +216,7 @@ public class XmlRepositoryManager
         // build entire set of classes
         LinkedList<OdmaClass> unevaluatedClassClassesQueue = new LinkedList<OdmaClass>();
         ArrayList<OdmaXmlClass> buildEffectivePropertiesList = new ArrayList<OdmaXmlClass>();
-        unevaluatedClassClassesQueue.add(classesHive.getClassInfo(OdmaTypes.CLASS_CLASS));
+        unevaluatedClassClassesQueue.add(classesHive.getClassInfo(OdmaCommonNames.CLASS_CLASS));
         while(unevaluatedClassClassesQueue.size() > 0)
         {
             OdmaClass classClass = unevaluatedClassClassesQueue.removeFirst();
@@ -239,17 +233,27 @@ public class XmlRepositoryManager
                 }
                 else
                 {
-                    OdmaProperty propNameQualifier = od.getProperties().get(OdmaTypes.PROPERTY_NAMEQUALIFIER);
-                    OdmaProperty propName = od.getProperties().get(OdmaTypes.PROPERTY_NAME);
-                    OdmaProperty propParent = od.getProperties().get(OdmaTypes.PROPERTY_PARENT);
-                    if( (propNameQualifier!=null) && (propName!=null) && (propParent != null) )
+                    OdmaProperty propNamespace = od.getProperties().get(OdmaCommonNames.PROPERTY_NAMESPACE);
+                    if(propNamespace == null)
+                    {
+                        // handle xml files containing objects of OpenDMA < 0.7.0
+                        propNamespace = od.getProperties().get(new OdmaQName("opendma", "NameQualifier"));
+                    }
+                    OdmaProperty propName = od.getProperties().get(OdmaCommonNames.PROPERTY_NAME);
+                    OdmaProperty propSuperClass = od.getProperties().get(OdmaCommonNames.PROPERTY_SUPERCLASS);
+                    if(propSuperClass == null)
+                    {
+                        // handle xml files containing objects of OpenDMA < 0.7.0
+                        propSuperClass = od.getProperties().get(OdmaCommonNames.PROPERTY_PARENT);
+                    }
+                    if( (propNamespace!=null) && (propName!=null) && (propSuperClass != null) )
                     {
                         try
                         {
-                            String nameQualifier = propNameQualifier.getString();
+                            String namespace = propNamespace.getString();
                             String name = propName.getString();
-                            OdmaId parent = propParent.getId();
-                            if(od.getClassName().equals(new OdmaQName(nameQualifier,name)) && (parent.equals(classClass.getId())))
+                            OdmaId parent = propSuperClass.getId();
+                            if(od.getClassName().equals(new OdmaQName(namespace,name)) && (parent.equals(classClass.getId())))
                             {
                                 isClass = true;
                             }
@@ -269,7 +273,7 @@ public class XmlRepositoryManager
                     OdmaXmlClass c = factoryCreateClass(od,classClass);
                     classPostProcessing.add(c);
                     buildEffectivePropertiesList.add(c);
-                    if(objects.containsKey(classId.toString()))
+                    if(objects.containsKey(classId))
                     {
                         if(duplicateIdContinue)
                         {
@@ -281,37 +285,42 @@ public class XmlRepositoryManager
                             throw new OdmaXmlRepositoryException("duplicated id "+classId);
                         }
                     }
-                    objects.put(classId.toString(),c);
+                    objects.put(classId,c);
                     classes.put(c.getQName(),c);
                     objectDatas.set(i,null);
                 }
             }
-            for(int i = 0; i < classPostProcessing.size(); i++)
+            for(OdmaXmlClass c : classPostProcessing)
             {
-                OdmaXmlClass c = (OdmaXmlClass)classPostProcessing.get(i);
                 Map<OdmaQName, OdmaProperty> p = c.getInternalProperties();
                 // resolve parent from ID to instance
-                OdmaPropertyImpl parentProperty = (OdmaPropertyImpl)p.get(OdmaTypes.PROPERTY_PARENT);
-                if(parentProperty instanceof UnevaluatedReferenceProperty)
+                OdmaPropertyImpl superClassProperty = (OdmaPropertyImpl)p.get(OdmaCommonNames.PROPERTY_SUPERCLASS);
+                if(superClassProperty == null)
+                {
+                    // handle xml files containing objects of OpenDMA < 0.7.0
+                    superClassProperty = (OdmaPropertyImpl)p.get(OdmaCommonNames.PROPERTY_PARENT);
+                }
+                if(superClassProperty instanceof UnevaluatedReferenceProperty)
                 {
                     OdmaId parentId;
                     try
                     {
-                        parentId = parentProperty.getId();
+                        parentId = superClassProperty.getId();
                     }
                     catch(OdmaInvalidDataTypeException e1)
                     {
                         throw new OdmaXmlRepositoryException("Implementation error",e1);
                     }
-                    OdmaClass parent = (OdmaClass)objects.get(parentId.toString());
+                    OdmaClass parent = (OdmaClass)objects.get(parentId);
                     if(parent == null)
                     {
+                        // TODO: What if this parentId exists, but is defined in the XML file _after_ this object?
                         throw new OdmaRuntimeException("Invalid parent ("+parentId+") for class "+c.getId());
                     }
                     try
                     {
-                        parentProperty = new OdmaPropertyImpl(OdmaTypes.PROPERTY_PARENT,parent,OdmaTypes.TYPE_REFERENCE,false,true);
-                        p.put(OdmaTypes.PROPERTY_PARENT,parentProperty);
+                        superClassProperty = new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_SUPERCLASS,parent,OdmaType.REFERENCE,false,true);
+                        p.put(OdmaCommonNames.PROPERTY_SUPERCLASS,superClassProperty);
                     }
                     catch(OdmaInvalidDataTypeException e)
                     {
@@ -319,10 +328,10 @@ public class XmlRepositoryManager
                     }
                 }
                 // resolve aspects from ID to instance
-                OdmaPropertyImpl aspectsProperty = (OdmaPropertyImpl)p.get(OdmaTypes.PROPERTY_ASPECTS);
+                OdmaPropertyImpl aspectsProperty = (OdmaPropertyImpl)p.get(OdmaCommonNames.PROPERTY_ASPECTS);
                 if(aspectsProperty instanceof UnevaluatedReferenceProperty)
                 {
-                    OdmaIdList aspetIds;
+                    List<OdmaId> aspetIds;
                     try
                     {
                         aspetIds = aspectsProperty.getIdList();
@@ -331,51 +340,50 @@ public class XmlRepositoryManager
                     {
                         throw new OdmaXmlRepositoryException("Implementation error",e1);
                     }
-                    OdmaXmlMultipleObjectEnumeration aspects = new OdmaXmlMultipleObjectEnumeration();
-                    Iterator<?> itAspectIds = aspetIds.iterator();
-                    while(itAspectIds.hasNext())
+                    LinkedList<OdmaClass> aspects = new LinkedList<OdmaClass>();
+                    for(OdmaId aspectId : aspetIds)
                     {
-                        OdmaId aspectId = (OdmaId)itAspectIds.next();
-                        OdmaClass aspect = (OdmaClass)objects.get(aspectId.toString());
+                        OdmaClass aspect = (OdmaClass)objects.get(aspectId);
                         if(aspect == null)
                         {
+                            // TODO: What if this parentId exists, but is defined in the XML file _after_ this object?
                             throw new OdmaRuntimeException("Invalid aspect ("+aspectId+") for class "+c.getId());
                         }
                         aspects.add(aspect);
                     }
                     try
                     {
-                        aspectsProperty = new OdmaPropertyImpl(OdmaTypes.PROPERTY_ASPECTS,aspects,OdmaTypes.TYPE_REFERENCE,true,true);
-                        p.put(OdmaTypes.PROPERTY_ASPECTS,aspectsProperty);
+                        aspectsProperty = new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_ASPECTS,aspects,OdmaType.REFERENCE,true,true);
+                        p.put(OdmaCommonNames.PROPERTY_ASPECTS,aspectsProperty);
                     }
                     catch(OdmaInvalidDataTypeException e)
                     {
                         throw new OdmaRuntimeException("Implementation error",e);
                     }
                 }
-                // register at parent as subclass or as root aspect
-                OdmaClass parent;
+                // register at superClass as subclass or as root aspect
+                OdmaClass superClass;
                 try
                 {
-                    parent = (OdmaClass)parentProperty.getReference();
+                    superClass = (OdmaClass)superClassProperty.getReference();
                 }
                 catch(OdmaInvalidDataTypeException e)
                 {
                     throw new OdmaRuntimeException("Implementation error",e);
                 }
-                if(parent != null)
+                if(superClass != null)
                 {
-                    classesHive.registerSubClass(parent.getQName(),c);
+                    classesHive.registerSubClass(superClass.getQName(),c);
                 }
                 else
                 {
                     classesHive.registerRootAspect(c);
                 }
                 // register as subclass of all aspects
-                OdmaClassEnumeration aspects;
+                Iterable<OdmaClass> aspects;
                 try
                 {
-                    aspects = (OdmaClassEnumeration)aspectsProperty.getReferenceEnumeration();
+                    aspects = (Iterable<OdmaClass>)aspectsProperty.getReferenceIterable();
                 }
                 catch(OdmaInvalidDataTypeException e)
                 {
@@ -383,10 +391,8 @@ public class XmlRepositoryManager
                 }
                 if(aspects != null)
                 {
-                    Iterator<?> itAspects = aspects.iterator();
-                    while(itAspects.hasNext())
+                    for(OdmaClass aspect : aspects)
                     {
-                        OdmaClass aspect = (OdmaClass)itAspects.next();
                         classesHive.registerAspectUsage(aspect.getQName(),c);
                     }
                 }
@@ -397,11 +403,11 @@ public class XmlRepositoryManager
                 while(test != null)
                 {
                     noLoopTest.put(test.getQName(),Boolean.TRUE);
-                    if(test.getQName().equals(OdmaTypes.CLASS_CLASS))
+                    if(test.getQName().equals(OdmaCommonNames.CLASS_CLASS))
                     {
                         extendsClassClass = true;
                     }
-                    test = test.getParent();
+                    test = test.getSuperClass();
                     if((test != null)&&(noLoopTest.containsKey(test.getQName())))
                     {
                         throw new OdmaXmlRepositoryException("Loop in class hierarchy of "+c.getQName());
@@ -418,11 +424,11 @@ public class XmlRepositoryManager
         for(int i = 0; i < objectDatas.size(); i++)
         {
             // get the object data
-            OdmaXmlObjectData od = (OdmaXmlObjectData)objectDatas.get(i);
+            OdmaXmlObjectData od = objectDatas.get(i);
             if(od == null)
                 continue;
             // resolve class
-            OdmaClass cls = (OdmaClass)classes.get(od.getClassName());
+            OdmaClass cls = classes.get(od.getClassName());
             if(cls == null)
             {
                 throw new OdmaXmlRepositoryException("invalid class name "+od.getClassName());
@@ -439,7 +445,7 @@ public class XmlRepositoryManager
                 continue;
             }
             // test for duplicated ID
-            if(objects.containsKey(objectId.toString()))
+            if(objects.containsKey(objectId))
             {
                 if(duplicateIdContinue)
                 {
@@ -452,7 +458,7 @@ public class XmlRepositoryManager
                 }
             }
             OdmaObject o = factoryCreateObject(od, cls);
-            objects.put(objectId.toString(),o);
+            objects.put(objectId,o);
             objectDatas.set(i,null);
         }
         
@@ -462,13 +468,11 @@ public class XmlRepositoryManager
         }
         
         // resolve IDs to objects
-        Iterator<OdmaObject> it = objects.values().iterator();
-        while(it.hasNext())
+        for(OdmaObject obj : objects.values())
         {
-            OdmaObject o = it.next();
-            if(o instanceof OdmaXmlObject)
+            if(obj instanceof OdmaXmlObject)
             {
-                ((OdmaXmlObject)o).resolveIds(objects);
+                ((OdmaXmlObject)obj).resolveIds(objects);
             }
         }
         OdmaXmlObject.staticResolveIds(classesHive.getRepositoryObjectProperties(),objects);
@@ -488,13 +492,11 @@ public class XmlRepositoryManager
         }
         
         // validate all objects
-        Iterator<OdmaObject> itAllObjects = objects.values().iterator();
-        while(itAllObjects.hasNext())
+        for(OdmaObject obj : objects.values())
         {
-            OdmaObject o = (OdmaObject)itAllObjects.next();
-            if(o instanceof OdmaXmlObject)
+            if(obj instanceof OdmaXmlObject)
             {
-                ((OdmaXmlObject)o).validateProperties(false,enforceRequired);
+                ((OdmaXmlObject)obj).validateProperties(false,enforceRequired);
             }
         }
 
@@ -503,7 +505,7 @@ public class XmlRepositoryManager
     protected OdmaObject factoryCreateObject(OdmaXmlObjectData od, OdmaClass cls) throws OdmaXmlRepositoryException
     {
         // test if this object implements OdmaPropertyInfo
-        boolean isPropertyInfo = classesHive.isOrIsExtending(cls, OdmaTypes.CLASS_PROPERTYINFO);
+        boolean isPropertyInfo = classesHive.isOrIsExtending(cls, OdmaCommonNames.CLASS_PROPERTYINFO);
         if(isPropertyInfo)
         {
             return new OdmaXmlPropertyInfo(od.getProperties());
@@ -511,13 +513,13 @@ public class XmlRepositoryManager
         else
         {
             // detect implemented OpenDMA aspects
-            boolean isAssociation = classesHive.isOrIsExtending(cls, OdmaTypes.CLASS_ASSOCIATION);
-            boolean isContainable = classesHive.isOrIsExtending(cls, OdmaTypes.CLASS_CONTAINABLE);
-            boolean isContainer = classesHive.isOrIsExtending(cls, OdmaTypes.CLASS_CONTAINER);
-            boolean isContentElement = classesHive.isOrIsExtending(cls, OdmaTypes.CLASS_CONTENTELEMENT);
-            boolean isDocument = classesHive.isOrIsExtending(cls, OdmaTypes.CLASS_DOCUMENT);
-            boolean isFolder = classesHive.isOrIsExtending(cls, OdmaTypes.CLASS_FOLDER);
-            boolean isVersionCollection = classesHive.isOrIsExtending(cls, OdmaTypes.CLASS_VERSIONCOLLECTION);
+            boolean isAssociation = classesHive.isOrIsExtending(cls, OdmaCommonNames.CLASS_ASSOCIATION);
+            boolean isContainable = classesHive.isOrIsExtending(cls, OdmaCommonNames.CLASS_CONTAINABLE);
+            boolean isContainer = classesHive.isOrIsExtending(cls, OdmaCommonNames.CLASS_CONTAINER);
+            boolean isContentElement = classesHive.isOrIsExtending(cls, OdmaCommonNames.CLASS_CONTENTELEMENT);
+            boolean isDocument = classesHive.isOrIsExtending(cls, OdmaCommonNames.CLASS_DOCUMENT);
+            boolean isFolder = classesHive.isOrIsExtending(cls, OdmaCommonNames.CLASS_FOLDER);
+            boolean isVersionCollection = classesHive.isOrIsExtending(cls, OdmaCommonNames.CLASS_VERSIONCOLLECTION);
             // count number of implemented aspects
             int implementedAspectsCount = 0;
             if(isAssociation)
@@ -598,11 +600,16 @@ public class XmlRepositoryManager
     protected OdmaXmlObjectData parseObject(Element objectElement) throws OdmaXmlRepositoryException
     {
         // get odma class name
-        String classQualifier = objectElement.getAttribute(ATTRIBUTENAME_CLASSQUALIFIER);
-        String className = objectElement.getAttribute(ATTRIBUTENAME_CLASSNAME);
-        if( (classQualifier==null) || (classQualifier.length()==0) )
+        String classNamespace = objectElement.getAttribute(ATTRIBUTENAME_CLASSNAMESPACE);
+        if(classNamespace == null)
         {
-            throw new OdmaXmlRepositoryException("Every OdmaObject element must have a non-empty classQualifier attribute");
+        	// support xml files created before 0.7.0
+            classNamespace = objectElement.getAttribute(ATTRIBUTENAME_CLASSQUALIFIER_DEPRECATED);
+        }
+        String className = objectElement.getAttribute(ATTRIBUTENAME_CLASSNAME);
+        if( (classNamespace==null) || (classNamespace.length()==0) )
+        {
+            throw new OdmaXmlRepositoryException("Every OdmaObject element must have a non-empty classNamespace attribute");
         }
         if( (className==null) || (className.length()==0) )
         {
@@ -627,17 +634,21 @@ public class XmlRepositoryManager
                 }
             }
         }
-        return new OdmaXmlObjectData(new OdmaQName(classQualifier,className),properties);
+        return new OdmaXmlObjectData(new OdmaQName(classNamespace,className),properties);
     }
     
     protected OdmaProperty parseProperty(Element propertyElement) throws OdmaXmlRepositoryException
     {
         // get property name and type
-        String attrQualifier = propertyElement.getAttribute(ATTRIBUTENAME_QUALIFIER);
+        String attrNamespace = propertyElement.getAttribute(ATTRIBUTENAME_NAMESPACE);
+        if(attrNamespace == null)
+        {
+            attrNamespace = propertyElement.getAttribute(ATTRIBUTENAME_QUALIFIER_DEPRECATED);
+        }
         String attrName = propertyElement.getAttribute(ATTRIBUTENAME_NAME);
         String attrType = propertyElement.getAttribute(ATTRIBUTENAME_TYPE);
         String attrMultivalue = propertyElement.getAttribute(ATTRIBUTENAME_MULTIVALUE);
-        if( (attrQualifier==null) || (attrQualifier.length()==0) )
+        if( (attrNamespace==null) || (attrNamespace.length()==0) )
         {
             throw new OdmaXmlRepositoryException("Every Property element must have a non-empty qualifier attribute");
         }
@@ -649,12 +660,11 @@ public class XmlRepositoryManager
         {
             throw new OdmaXmlRepositoryException("Every Property element must have a non-empty type attribute");
         }
-        Integer dataTypeObj = (Integer)datatypeValues.get(attrType.toLowerCase());
-        if(dataTypeObj == null)
+        OdmaType dataType = datatypeValues.get(attrType.toLowerCase());
+        if(dataType == null)
         {
             throw new OdmaXmlRepositoryException("The type attribute of every Property must only contain valid data types: "+attrType.toLowerCase());
         }
-        int dataType = dataTypeObj.intValue();
         // multivalue
         boolean multivalue = false;
         if( (attrMultivalue != null) && (attrMultivalue.length() > 0) )
@@ -672,7 +682,7 @@ public class XmlRepositoryManager
             }
         }
         // get values
-        List values = (dataType == OdmaTypes.TYPE_REFERENCE) ? factoryCreateList(OdmaTypes.TYPE_ID) : factoryCreateList(dataType);
+        LinkedList<Object> values = new LinkedList<Object>();
         NodeList propertyChilds = propertyElement.getChildNodes();
         for (int i = 0; i < propertyChilds.getLength(); i++)
         {
@@ -692,7 +702,7 @@ public class XmlRepositoryManager
             {
                 try
                 {
-                    return new OdmaPropertyImpl(new OdmaQName(attrQualifier,attrName),null,dataType,false,true);
+                    return new OdmaPropertyImpl(new OdmaQName(attrNamespace,attrName),null,dataType,false,true);
                 }
                 catch(OdmaInvalidDataTypeException e)
                 {
@@ -703,13 +713,13 @@ public class XmlRepositoryManager
             {
                 try
                 {
-                    if(dataType == OdmaTypes.TYPE_REFERENCE)
+                    if(dataType == OdmaType.REFERENCE)
                     {
-                        return new UnevaluatedReferenceProperty(new OdmaQName(attrQualifier,attrName),values.get(0),false,true);
+                        return new UnevaluatedReferenceProperty(new OdmaQName(attrNamespace,attrName),values.get(0),false,true);
                     }
                     else
                     {
-                        return new OdmaPropertyImpl(new OdmaQName(attrQualifier,attrName),values.get(0),dataType,false,true);
+                        return new OdmaPropertyImpl(new OdmaQName(attrNamespace,attrName),values.get(0),dataType,false,true);
                     }
                 }
                 catch(OdmaInvalidDataTypeException e)
@@ -726,20 +736,13 @@ public class XmlRepositoryManager
         {
             try
             {
-                if(values.size()==0)
+                if(dataType == OdmaType.REFERENCE)
                 {
-                    return new OdmaPropertyImpl(new OdmaQName(attrQualifier,attrName),null,dataType,true,true);
+                    return new UnevaluatedReferenceProperty(new OdmaQName(attrNamespace,attrName),values,true,true);
                 }
                 else
                 {
-                    if(dataType == OdmaTypes.TYPE_REFERENCE)
-                    {
-                        return new UnevaluatedReferenceProperty(new OdmaQName(attrQualifier,attrName),values,true,true);
-                    }
-                    else
-                    {
-                        return new OdmaPropertyImpl(new OdmaQName(attrQualifier,attrName),values,dataType,true,true);
-                    }
+                    return new OdmaPropertyImpl(new OdmaQName(attrNamespace,attrName),values,dataType,true,true);
                 }
             }
             catch(OdmaInvalidDataTypeException e)
@@ -749,44 +752,11 @@ public class XmlRepositoryManager
         }
     }
     
-    protected List factoryCreateList(int dataType) throws OdmaXmlRepositoryException
-    {
-        switch(dataType)
-        {
-        case OdmaTypes.TYPE_STRING:
-            return new ArrayStringList();
-        case OdmaTypes.TYPE_INTEGER:
-            return new ArrayIntegerList();
-        case OdmaTypes.TYPE_SHORT:
-            return new ArrayShortList();
-        case OdmaTypes.TYPE_LONG:
-            return new ArrayLongList();
-        case OdmaTypes.TYPE_FLOAT:
-            return new ArrayFloatList();
-        case OdmaTypes.TYPE_DOUBLE:
-            return new ArrayDoubleList();
-        case OdmaTypes.TYPE_BOOLEAN:
-            return new ArrayBooleanList();
-        case OdmaTypes.TYPE_DATETIME:
-            return new ArrayDateTimeList();
-        case OdmaTypes.TYPE_BLOB:
-            return new ArrayBlobList();
-        case OdmaTypes.TYPE_REFERENCE:
-            return new OdmaXmlMultipleObjectEnumeration();
-        case OdmaTypes.TYPE_CONTENT:
-            return new ArrayOdmaContentList();
-        case OdmaTypes.TYPE_ID:
-            return new ArrayOdmaIdList();
-        default:
-            throw new OdmaXmlRepositoryException("Implementation error: unknown data type");
-        }
-    }
-    
     protected static DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
-    protected Object parseValue(Element valueElement, int dataType) throws OdmaXmlRepositoryException
+    protected Object parseValue(Element valueElement, OdmaType dataType) throws OdmaXmlRepositoryException
     {
-        // Concatenate all text childs
+        // Concatenate all text children
         StringBuffer valueSB = new StringBuffer();
         NodeList valueChilds = valueElement.getChildNodes();
         for (int i = 0; i < valueChilds.getLength(); i++)
@@ -797,13 +767,13 @@ public class XmlRepositoryManager
                 valueSB.append(child.getNodeValue());
             }
         }
-        // interprete String depending on data type
+        // convert String to Java object depending on data type
         String s = valueSB.toString();
         switch(dataType)
         {
-        case OdmaTypes.TYPE_STRING:
+        case STRING:
             return s;
-        case OdmaTypes.TYPE_INTEGER:
+        case INTEGER:
             try
             {
                 return new Integer(Integer.parseInt(s));
@@ -812,7 +782,7 @@ public class XmlRepositoryManager
             {
                 throw new OdmaXmlRepositoryException("Invalid contents in value element of integer property");
             }
-        case OdmaTypes.TYPE_SHORT:
+        case SHORT:
             try
             {
                 return new Short(Short.parseShort(s));
@@ -821,7 +791,7 @@ public class XmlRepositoryManager
             {
                 throw new OdmaXmlRepositoryException("Invalid contents in value element of short property");
             }
-        case OdmaTypes.TYPE_LONG:
+        case LONG:
             try
             {
                 return new Long(Long.parseLong(s));
@@ -830,7 +800,7 @@ public class XmlRepositoryManager
             {
                 throw new OdmaXmlRepositoryException("Invalid contents in value element of long property");
             }
-        case OdmaTypes.TYPE_FLOAT:
+        case FLOAT:
             try
             {
                 return new Float(Float.parseFloat(s));
@@ -839,7 +809,7 @@ public class XmlRepositoryManager
             {
                 throw new OdmaXmlRepositoryException("Invalid contents in value element of float property");
             }
-        case OdmaTypes.TYPE_DOUBLE:
+        case DOUBLE:
             try
             {
                 return new Double(Double.parseDouble(s));
@@ -848,7 +818,7 @@ public class XmlRepositoryManager
             {
                 throw new OdmaXmlRepositoryException("Invalid contents in value element of double property");
             }
-        case OdmaTypes.TYPE_BOOLEAN:
+        case BOOLEAN:
             if(s.equalsIgnoreCase("true"))
             {
                 return Boolean.TRUE;
@@ -861,7 +831,7 @@ public class XmlRepositoryManager
             {
                 throw new OdmaXmlRepositoryException("Invalid contents in value element of boolean property");
             }
-        case OdmaTypes.TYPE_DATETIME:
+        case DATETIME:
             try
             {
                 return dateTimeFormat.parseObject(s);
@@ -870,7 +840,7 @@ public class XmlRepositoryManager
             {
                 throw new OdmaXmlRepositoryException("Invalid contents in value element of datetime property");
             }
-        case OdmaTypes.TYPE_BLOB:
+        case BLOB:
             try
             {
                 return Base64Coder.decode(s);
@@ -879,11 +849,11 @@ public class XmlRepositoryManager
             {
                 throw new OdmaXmlRepositoryException("Invalid contents in value element of blob property");
             }
-        case OdmaTypes.TYPE_REFERENCE:
+        case REFERENCE:
             return new OdmaId(s);
-        case OdmaTypes.TYPE_CONTENT:
+        case CONTENT:
             return new OdmaXmlFileContent(s);
-        case OdmaTypes.TYPE_ID:
+        case ID:
             return new OdmaId(s);
         default:
             throw new OdmaXmlRepositoryException("Implementation error: unknown data type");
