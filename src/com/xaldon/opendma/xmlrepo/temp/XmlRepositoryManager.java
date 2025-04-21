@@ -2,7 +2,6 @@ package com.xaldon.opendma.xmlrepo.temp;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -753,7 +753,20 @@ public class XmlRepositoryManager
         }
     }
     
-    protected static DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final ThreadLocal<SimpleDateFormat> DATETIME_FORMAT = new ThreadLocal<SimpleDateFormat>() {
+        @Override protected SimpleDateFormat initialValue() {
+            SimpleDateFormat result = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            result.setTimeZone(TimeZone.getTimeZone("UTC"));
+            result.setLenient(false);
+            return result;
+        }
+    };
+
+    private static final ThreadLocal<SimpleDateFormat> DATETIME_FORMAT_DEPRECATED = new ThreadLocal<SimpleDateFormat>() {
+        @Override protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        }
+    };
     
     protected Object parseValue(Element valueElement, OdmaType dataType) throws OdmaXmlRepositoryException
     {
@@ -835,7 +848,14 @@ public class XmlRepositoryManager
         case DATETIME:
             try
             {
-                return dateTimeFormat.parseObject(s);
+                try
+                {
+                    return DATETIME_FORMAT.get().parseObject(s);
+                }
+                catch(ParseException e)
+                {
+                    return DATETIME_FORMAT_DEPRECATED.get().parseObject(s);
+                }
             }
             catch(ParseException e)
             {
