@@ -55,7 +55,7 @@ public class XmlRepositoryManager
     
     protected boolean enforceRequired = false;
 
-    public XmlRepositoryManager(InputStream in, String user, String password, boolean enforceRequired) throws OdmaXmlRepositoryException
+    public XmlRepositoryManager(InputStream in, boolean enforceRequired) throws OdmaXmlRepositoryException
     {
         this.enforceRequired = enforceRequired;
         Document descriptionDocument;

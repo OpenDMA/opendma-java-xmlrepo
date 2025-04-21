@@ -1,32 +1,73 @@
 package com.xaldon.opendma.xmlrepo;
 
-import org.opendma.AdaptorManager;
-import org.opendma.exceptions.OdmaConfigurationException;
+import java.io.InputStream;
+import java.util.Properties;
 
-public class Adaptor extends NonRegisteringAdaptor
+import org.opendma.api.OdmaAdaptor;
+import org.opendma.api.OdmaSession;
+import org.opendma.exceptions.OdmaException;
+
+import com.xaldon.opendma.xmlrepo.exceptions.OdmaXmlRepositoryException;
+
+public class Adaptor implements OdmaAdaptor
 {
 
     public final static String SYSTEMID = "xmlrepo";
-    
-    // Register with AdaptorManager
-    static
+
+    public OdmaSession connect(Properties info) throws OdmaException
     {
         try
         {
-            AdaptorManager.registerAdaptor(new Adaptor(),SYSTEMID);
+            XmlRepositorySession session = new XmlRepositorySession(info);
+            return session;
         }
-        catch(OdmaConfigurationException e)
+        catch(OdmaException odmae)
         {
-            throw new RuntimeException("Can't register adaptor!",e);
+            throw odmae;
         }
+        catch(Exception e)
+        {
+            throw new OdmaException(e.getLocalizedMessage(),e);
+        }
+    }
+
+    public static InputStream getResourceAsStream(String resource) throws OdmaXmlRepositoryException
+    {
+        String stripped = resource.startsWith("/") ? resource.substring(1) : resource;
+        InputStream stream = null;
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        if(classLoader!=null)
+        {
+            stream = classLoader.getResourceAsStream(stripped);
+        }
+        if(stream == null)
+        {
+            stream = Adaptor.class.getResourceAsStream(resource);
+        }
+        if(stream == null)
+        {
+            stream = Adaptor.class.getClassLoader().getResourceAsStream(stripped);
+        }
+        if(stream == null)
+        {
+            throw new OdmaXmlRepositoryException("Can not load resource " + resource);
+        }
+        return stream;
+    }
+    
+    public String getSystemId()
+    {
+        return SYSTEMID;
     }
     
     /**
      * Create a new OpenDMA Adaptor
+     * 
+     * @see java.util.ServiceLoader
      */
     public Adaptor()
     {
-        // required for Class.forName().newInstance()
+        // no-arg constructor is required for java services. See ServiceLoader documentation
     }
 
 }

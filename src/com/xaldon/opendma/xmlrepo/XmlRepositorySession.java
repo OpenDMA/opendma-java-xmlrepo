@@ -1,5 +1,7 @@
 package com.xaldon.opendma.xmlrepo;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,28 +38,44 @@ public class XmlRepositorySession implements OdmaSession
     
     protected XmlRepositorySession(Properties info) throws OdmaException
     {
-        // get connection arguments
-        String user = info.getProperty("user");
-        String password = info.getProperty("password");
-        String url = info.getProperty("url");
+        String filename = info.getProperty("filename");
+        String classpathResource = info.getProperty("classpathResource");
         boolean enforceRequired = "true".equalsIgnoreCase(info.getProperty("enforceRequired"));
-        // check url and get connectionUri
-        if(!url.startsWith(URLPREFIX))
-        {
-            throw new OdmaException("Invalid schema in url. Expected \""+URLPREFIX+"\"");
-        }
-        String resourceName = url.substring(URLPREFIXLEN);
-        InputStream is = NonRegisteringAdaptor.getResourceAsStream(resourceName);
         try
         {
-            repoManager = new XmlRepositoryManager(is, user, password, enforceRequired);
-        }
-        finally
-        {
-        	try
+            InputStream is;
+            if(filename != null)
             {
-                is.close();
-		    } catch (IOException e) { }
+                File file = new File(filename);
+                if(!file.exists())
+                {
+                    throw new OdmaException("File does not exist: "+file.getAbsolutePath());
+                }
+                is = new FileInputStream(file);
+            }
+            else if(classpathResource != null)
+            {
+                is = Adaptor.getResourceAsStream(classpathResource);
+            }
+            else
+            {
+                throw new OdmaException("Missinmg `filename` or `classpathResource` session argument for XML Repository");
+            }
+            try
+            {
+                repoManager = new XmlRepositoryManager(is, enforceRequired);
+            }
+            finally
+            {
+                try
+                {
+                    is.close();
+                } catch (IOException e) { }
+            }
+        }
+        catch(IOException ioe)
+        {
+            throw new OdmaException("Error reading file: "+filename, ioe);
         }
         repo = repoManager.getRepository();
         repoId = repo.getId();

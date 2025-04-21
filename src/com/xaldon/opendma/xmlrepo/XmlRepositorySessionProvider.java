@@ -11,19 +11,35 @@ import org.opendma.exceptions.OdmaRuntimeException;
 public class XmlRepositorySessionProvider implements OdmaSessionProvider
 {
 
-    private String url;
+    private String filename;
+
+    private String classpathResource;
     
-    private static final NonRegisteringAdaptor adaptor = new NonRegisteringAdaptor();
+    private static final Adaptor adaptor = new Adaptor();
     
     public void setFilename(String filename)
     {
-        this.url = Adaptor.SYSTEMID + ":" + filename;
+        this.filename = filename;
+        this.classpathResource = null;
+    }
+    
+    public void setClasspathResource(String classpathResource)
+    {
+        this.classpathResource = classpathResource;
+        this.filename = null;
     }
     
     public OdmaSession getSession()
     {
         Properties prop = new Properties();
-        prop.setProperty("url", url);
+        if(filename != null)
+        {
+            prop.setProperty("filename", filename);
+        }
+        if(classpathResource != null)
+        {
+            prop.setProperty("classpathResource", classpathResource);
+        }
         try
         {
             return adaptor.connect(prop);
