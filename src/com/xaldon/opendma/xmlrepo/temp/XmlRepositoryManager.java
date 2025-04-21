@@ -601,9 +601,9 @@ public class XmlRepositoryManager
     {
         // get odma class name
         String classNamespace = objectElement.getAttribute(ATTRIBUTENAME_CLASSNAMESPACE);
-        if(classNamespace == null)
+        if( (classNamespace==null) || (classNamespace.length()==0) )
         {
-        	// support xml files created before 0.7.0
+        	// support xml files created by XML exporter prior to 0.7.0
             classNamespace = objectElement.getAttribute(ATTRIBUTENAME_CLASSQUALIFIER_DEPRECATED);
         }
         String className = objectElement.getAttribute(ATTRIBUTENAME_CLASSNAME);
@@ -641,8 +641,9 @@ public class XmlRepositoryManager
     {
         // get property name and type
         String attrNamespace = propertyElement.getAttribute(ATTRIBUTENAME_NAMESPACE);
-        if(attrNamespace == null)
+        if( (attrNamespace==null) || (attrNamespace.length()==0) )
         {
+            // support xml files created by XML exporter prior to 0.7.0
             attrNamespace = propertyElement.getAttribute(ATTRIBUTENAME_QUALIFIER_DEPRECATED);
         }
         String attrName = propertyElement.getAttribute(ATTRIBUTENAME_NAME);
