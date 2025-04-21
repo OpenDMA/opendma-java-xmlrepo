@@ -19,7 +19,7 @@ import org.opendma.exceptions.OdmaException;
 import org.opendma.exceptions.OdmaObjectNotFoundException;
 import org.opendma.exceptions.OdmaQuerySyntaxException;
 
-import com.xaldon.opendma.xmlrepo.temp.XmlRepositoryManager;
+import com.xaldon.opendma.xmlrepo.objects.XmlRepositoryManager;
 
 public class XmlRepositorySession implements OdmaSession
 {

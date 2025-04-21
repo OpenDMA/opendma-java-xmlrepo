@@ -1,4 +1,4 @@
-package com.xaldon.opendma.xmlrepo.temp;
+package com.xaldon.opendma.xmlrepo.objects;
 //Copyright 2003-2009 Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland
 //www.source-code.biz, www.inventec.ch/chdh
 //

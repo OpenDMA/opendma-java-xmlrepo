@@ -1,4 +1,4 @@
-package com.xaldon.opendma.xmlrepo.temp;
+package com.xaldon.opendma.xmlrepo.objects;
 
 import java.util.Date;
 import java.util.Map;
@@ -23,10 +23,10 @@ import com.xaldon.opendma.xmlrepo.exceptions.OdmaXmlRepositoryException;
  * 
  * @author Stefan Kopf, xaldon Technologies GmbH, the OpenDMA architecture board
  */
-public class OdmaXmlAssociation extends OdmaXmlObject implements OdmaAssociation
+public class OdmaXmlContainer extends OdmaXmlObject implements OdmaContainer
 {
 
-    public OdmaXmlAssociation(Map<OdmaQName, OdmaProperty> properties) throws OdmaXmlRepositoryException
+    public OdmaXmlContainer(Map<OdmaQName, OdmaProperty> properties) throws OdmaXmlRepositoryException
     {
         super(properties);
     }
@@ -34,21 +34,21 @@ public class OdmaXmlAssociation extends OdmaXmlObject implements OdmaAssociation
     // ----- Object specific property access -------------------------------------------------------
 
     // CHECKTEMPLATE: the following code has most likely been copied from a class template. Make sure to keep this code up to date!
-    // The following template code is available as OdmaAssociationTemplate
+    // The following template code is available as OdmaContainerTemplate
 
     /**
-     * Returns the <i>name</i> of this <code>Association</code>.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_NAME).getString()</code>.
+     * Returns the <i>title</i> of this <code>Container</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_TITLE).getString()</code>.
      * 
-     * <p>Property <b>Name</b> (opendma): <b>String</b><br/>
-     * [SingleValue] [Writable] [Required]<br/>
+     * <p>Property <b>Title</b> (opendma): <b>String</b><br/>
+     * [SingleValue] [Writable] [NotRequired]<br/>
      * Full description follows.</p>
      * 
-     * @return the <i>name</i> of this <code>Association</code>
+     * @return the <i>title</i> of this <code>Container</code>
      */
-    public String getName() {
+    public String getTitle() {
         try {
-            return getProperty(OdmaCommonNames.PROPERTY_NAME).getString();
+            return getProperty(OdmaCommonNames.PROPERTY_TITLE).getString();
         }
         catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
@@ -59,22 +59,22 @@ public class OdmaXmlAssociation extends OdmaXmlObject implements OdmaAssociation
     }
 
     /**
-     * Sets the <i>name</i> of this <code>Association</code>.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_NAME).setValue(value)</code>.
+     * Sets the <i>title</i> of this <code>Container</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_TITLE).setValue(value)</code>.
      * 
-     * <p>Property <b>Name</b> (opendma): <b>String</b><br/>
-     * [SingleValue] [Writable] [Required]<br/>
+     * <p>Property <b>Title</b> (opendma): <b>String</b><br/>
+     * [SingleValue] [Writable] [NotRequired]<br/>
      * Full description follows.</p>
      * 
      * @param newValue
-     *             The new value for the <i>name</i> of this <code>Association</code>
+     *             The new value for the <i>title</i> of this <code>Container</code>
      * 
      * @throws OdmaAccessDeniedException
      *             If this OdmaProperty is read-only or cannot be set by the current user
      */
-    public void setName(String newValue) throws OdmaAccessDeniedException {
+    public void setTitle(String newValue) throws OdmaAccessDeniedException {
         try {
-            getProperty(OdmaCommonNames.PROPERTY_NAME).setValue(newValue);
+            getProperty(OdmaCommonNames.PROPERTY_TITLE).setValue(newValue);
         }
         catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
@@ -85,18 +85,19 @@ public class OdmaXmlAssociation extends OdmaXmlObject implements OdmaAssociation
     }
 
     /**
-     * Returns the <code>Container</code> of this <code>Association</code> in which the containable is said to be contained.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTAINER).getReference()</code>.
+     * Returns the collection of all <code>Containable</code> objects that are contained in this <code>Container</code>.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTAINEES).getReferenceIterable()</code>.
      * 
-     * <p>Property <b>Container</b> (opendma): <b>Reference to Container (opendma)</b><br/>
-     * [SingleValue] [Writable] [Required]<br/>
+     * <p>Property <b>Containees</b> (opendma): <b>Reference to Containable (opendma)</b><br/>
+     * [MultiValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
-     * @return the <code>Container</code> of this <code>Association</code> in which the containable is said to be contained
+     * @return the collection of all <code>Containable</code> objects that are contained in this <code>Container</code>
      */
-    public OdmaContainer getContainer() {
+     @SuppressWarnings("unchecked")
+    public Iterable<OdmaContainable> getContainees() {
         try {
-            return (OdmaContainer)getProperty(OdmaCommonNames.PROPERTY_CONTAINER).getReference();
+            return (Iterable<OdmaContainable>)getProperty(OdmaCommonNames.PROPERTY_CONTAINEES).getReferenceIterable();
         }
         catch(ClassCastException cce) {
             throw new OdmaRuntimeException("Invalid data type of system property",cce);
@@ -110,44 +111,19 @@ public class OdmaXmlAssociation extends OdmaXmlObject implements OdmaAssociation
     }
 
     /**
-     * Sets the <code>Container</code> of this <code>Association</code> in which the containable is said to be contained.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTAINER).setValue(value)</code>.
+     * Returns the collection of all <code>Association</code>s between this <code>Container</code> and its containees.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_ASSOCIATIONS).getReferenceIterable()</code>.
      * 
-     * <p>Property <b>Container</b> (opendma): <b>Reference to Container (opendma)</b><br/>
-     * [SingleValue] [Writable] [Required]<br/>
+     * <p>Property <b>Associations</b> (opendma): <b>Reference to Association (opendma)</b><br/>
+     * [MultiValue] [ReadOnly] [NotRequired]<br/>
      * Full description follows.</p>
      * 
-     * @param newValue
-     *             The new value for the <code>Container</code> of this <code>Association</code> in which the containable is said to be contained
-     * 
-     * @throws OdmaAccessDeniedException
-     *             If this OdmaProperty is read-only or cannot be set by the current user
+     * @return the collection of all <code>Association</code>s between this <code>Container</code> and its containees
      */
-    public void setContainer(OdmaContainer newValue) throws OdmaAccessDeniedException {
+     @SuppressWarnings("unchecked")
+    public Iterable<OdmaAssociation> getAssociations() {
         try {
-            getProperty(OdmaCommonNames.PROPERTY_CONTAINER).setValue(newValue);
-        }
-        catch(OdmaInvalidDataTypeException oidte) {
-            throw new OdmaRuntimeException("Invalid data type of system property",oidte);
-        }
-        catch(OdmaPropertyNotFoundException oonfe) {
-            throw new OdmaRuntimeException("Predefined system property missing",oonfe);
-        }
-    }
-
-    /**
-     * Returns the <code>Containable</code> of this <code>Association</code> which is said to be contained in the container.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTAINABLE).getReference()</code>.
-     * 
-     * <p>Property <b>Containable</b> (opendma): <b>Reference to Containable (opendma)</b><br/>
-     * [SingleValue] [Writable] [Required]<br/>
-     * Full description follows.</p>
-     * 
-     * @return the <code>Containable</code> of this <code>Association</code> which is said to be contained in the container
-     */
-    public OdmaContainable getContainable() {
-        try {
-            return (OdmaContainable)getProperty(OdmaCommonNames.PROPERTY_CONTAINABLE).getReference();
+            return (Iterable<OdmaAssociation>)getProperty(OdmaCommonNames.PROPERTY_ASSOCIATIONS).getReferenceIterable();
         }
         catch(ClassCastException cce) {
             throw new OdmaRuntimeException("Invalid data type of system property",cce);
@@ -161,40 +137,14 @@ public class OdmaXmlAssociation extends OdmaXmlObject implements OdmaAssociation
     }
 
     /**
-     * Sets the <code>Containable</code> of this <code>Association</code> which is said to be contained in the container.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTAINABLE).setValue(value)</code>.
-     * 
-     * <p>Property <b>Containable</b> (opendma): <b>Reference to Containable (opendma)</b><br/>
-     * [SingleValue] [Writable] [Required]<br/>
-     * Full description follows.</p>
-     * 
-     * @param newValue
-     *             The new value for the <code>Containable</code> of this <code>Association</code> which is said to be contained in the container
-     * 
-     * @throws OdmaAccessDeniedException
-     *             If this OdmaProperty is read-only or cannot be set by the current user
-     */
-    public void setContainable(OdmaContainable newValue) throws OdmaAccessDeniedException {
-        try {
-            getProperty(OdmaCommonNames.PROPERTY_CONTAINABLE).setValue(newValue);
-        }
-        catch(OdmaInvalidDataTypeException oidte) {
-            throw new OdmaRuntimeException("Invalid data type of system property",oidte);
-        }
-        catch(OdmaPropertyNotFoundException oonfe) {
-            throw new OdmaRuntimeException("Predefined system property missing",oonfe);
-        }
-    }
-
-    /**
-     * Returns the date when this <code>Association</code> has been created.<br>
+     * Returns the date when this <code>Container</code> has been created.<br>
      * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CREATEDAT).getDateTime()</code>.
      * 
      * <p>Property <b>CreatedAt</b> (opendma): <b>DateTime</b><br/>
      * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
-     * @return the date when this <code>Association</code> has been created
+     * @return the date when this <code>Container</code> has been created
      */
     public Date getCreatedAt() {
         try {
@@ -209,14 +159,14 @@ public class OdmaXmlAssociation extends OdmaXmlObject implements OdmaAssociation
     }
 
     /**
-     * Returns the user who has created this <code>Association</code>.<br>
+     * Returns the user who has created this <code>Container</code>.<br>
      * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CREATEDBY).getString()</code>.
      * 
      * <p>Property <b>CreatedBy</b> (opendma): <b>String</b><br/>
      * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
-     * @return the user who has created this <code>Association</code>
+     * @return the user who has created this <code>Container</code>
      */
     public String getCreatedBy() {
         try {
@@ -231,14 +181,14 @@ public class OdmaXmlAssociation extends OdmaXmlObject implements OdmaAssociation
     }
 
     /**
-     * Returns the date when this <code>Association</code> has been modified the last time.<br>
+     * Returns the date when this <code>Container</code> has been modified the last time.<br>
      * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_LASTMODIFIEDAT).getDateTime()</code>.
      * 
      * <p>Property <b>LastModifiedAt</b> (opendma): <b>DateTime</b><br/>
      * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
-     * @return the date when this <code>Association</code> has been modified the last time
+     * @return the date when this <code>Container</code> has been modified the last time
      */
     public Date getLastModifiedAt() {
         try {
@@ -253,14 +203,14 @@ public class OdmaXmlAssociation extends OdmaXmlObject implements OdmaAssociation
     }
 
     /**
-     * Returns the user who has modified this <code>Association</code> the last time.<br>
+     * Returns the user who has modified this <code>Container</code> the last time.<br>
      * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_LASTMODIFIEDBY).getString()</code>.
      * 
      * <p>Property <b>LastModifiedBy</b> (opendma): <b>String</b><br/>
      * [SingleValue] [ReadOnly] [Required]<br/>
      * Full description follows.</p>
      * 
-     * @return the user who has modified this <code>Association</code> the last time
+     * @return the user who has modified this <code>Container</code> the last time
      */
     public String getLastModifiedBy() {
         try {

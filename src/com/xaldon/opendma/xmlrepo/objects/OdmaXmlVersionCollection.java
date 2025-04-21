@@ -1,4 +1,4 @@
-package com.xaldon.opendma.xmlrepo.temp;
+package com.xaldon.opendma.xmlrepo.objects;
 
 import java.util.Date;
 import java.util.Map;

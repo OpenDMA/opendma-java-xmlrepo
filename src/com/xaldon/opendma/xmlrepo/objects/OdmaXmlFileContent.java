@@ -1,4 +1,4 @@
-package com.xaldon.opendma.xmlrepo.temp;
+package com.xaldon.opendma.xmlrepo.objects;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,4 +1,4 @@
-package com.xaldon.opendma.xmlrepo.temp;
+package com.xaldon.opendma.xmlrepo.objects;
 
 import org.opendma.api.OdmaQName;
 import org.opendma.api.OdmaType;

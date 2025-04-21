@@ -1,9 +1,9 @@
-package com.xaldon.opendma.xmlrepo.temp;
+package com.xaldon.opendma.xmlrepo.objects;
 
 import java.util.Map;
 
 import org.opendma.api.OdmaCommonNames;
-import org.opendma.api.OdmaContentElement;
+import org.opendma.api.OdmaFolder;
 import org.opendma.api.OdmaProperty;
 import org.opendma.api.OdmaQName;
 import org.opendma.exceptions.OdmaAccessDeniedException;
@@ -14,16 +14,16 @@ import org.opendma.exceptions.OdmaRuntimeException;
 import com.xaldon.opendma.xmlrepo.exceptions.OdmaXmlRepositoryException;
 
 /**
- * Template implementation of the interface <code>{@link OdmaContentElement}</code>.<p>
+ * Template implementation of the interface <code>{@link OdmaFolder}</code>.<p>
  * 
  * Full description follows.
  * 
  * @author Stefan Kopf, xaldon Technologies GmbH, the OpenDMA architecture board
  */
-public class OdmaXmlContentElement extends OdmaXmlObject implements OdmaContentElement
+public class OdmaXmlFolder extends OdmaXmlContainer implements OdmaFolder
 {
-
-    public OdmaXmlContentElement(Map<OdmaQName, OdmaProperty> properties) throws OdmaXmlRepositoryException
+    
+    public OdmaXmlFolder(Map<OdmaQName, OdmaProperty> properties) throws OdmaXmlRepositoryException
     {
         super(properties);
     }
@@ -31,21 +31,24 @@ public class OdmaXmlContentElement extends OdmaXmlObject implements OdmaContentE
     // ----- Object specific property access -------------------------------------------------------
 
     // CHECKTEMPLATE: the following code has most likely been copied from a class template. Make sure to keep this code up to date!
-    // The following template code is available as OdmaContentElementTemplate
+    // The following template code is available as OdmaFolderTemplate
 
     /**
-     * Returns the mime type describing how the <code>Content</code> of this <code>ContentElement</code> has to be interpreted.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTENTTYPE).getString()</code>.
+     * Returns the <code>Folder</code> this <code>Folder</code> is a sub folder of.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_PARENT).getReference()</code>.
      * 
-     * <p>Property <b>ContentType</b> (opendma): <b>String</b><br/>
+     * <p>Property <b>Parent</b> (opendma): <b>Reference to Folder (opendma)</b><br/>
      * [SingleValue] [Writable] [NotRequired]<br/>
      * Full description follows.</p>
      * 
-     * @return the mime type describing how the <code>Content</code> of this <code>ContentElement</code> has to be interpreted
+     * @return the <code>Folder</code> this <code>Folder</code> is a sub folder of
      */
-    public String getContentType() {
+    public OdmaFolder getParent() {
         try {
-            return getProperty(OdmaCommonNames.PROPERTY_CONTENTTYPE).getString();
+            return (OdmaFolder)getProperty(OdmaCommonNames.PROPERTY_PARENT).getReference();
+        }
+        catch(ClassCastException cce) {
+            throw new OdmaRuntimeException("Invalid data type of system property",cce);
         }
         catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
@@ -56,22 +59,22 @@ public class OdmaXmlContentElement extends OdmaXmlObject implements OdmaContentE
     }
 
     /**
-     * Sets the mime type describing how the <code>Content</code> of this <code>ContentElement</code> has to be interpreted.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_CONTENTTYPE).setValue(value)</code>.
+     * Sets the <code>Folder</code> this <code>Folder</code> is a sub folder of.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_PARENT).setValue(value)</code>.
      * 
-     * <p>Property <b>ContentType</b> (opendma): <b>String</b><br/>
+     * <p>Property <b>Parent</b> (opendma): <b>Reference to Folder (opendma)</b><br/>
      * [SingleValue] [Writable] [NotRequired]<br/>
      * Full description follows.</p>
      * 
      * @param newValue
-     *             The new value for the mime type describing how the <code>Content</code> of this <code>ContentElement</code> has to be interpreted
+     *             The new value for the <code>Folder</code> this <code>Folder</code> is a sub folder of
      * 
      * @throws OdmaAccessDeniedException
      *             If this OdmaProperty is read-only or cannot be set by the current user
      */
-    public void setContentType(String newValue) throws OdmaAccessDeniedException {
+    public void setParent(OdmaFolder newValue) throws OdmaAccessDeniedException {
         try {
-            getProperty(OdmaCommonNames.PROPERTY_CONTENTTYPE).setValue(newValue);
+            getProperty(OdmaCommonNames.PROPERTY_PARENT).setValue(newValue);
         }
         catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
@@ -82,18 +85,22 @@ public class OdmaXmlContentElement extends OdmaXmlObject implements OdmaContentE
     }
 
     /**
-     * Returns the position of this element in the list of all content elements of the containing document.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_POSITION).getInteger()</code>.
+     * Returns the collection of <code>Folder</code>s which have this <code>Folder</code> in their parent property.<br>
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_SUBFOLDERS).getReferenceIterable()</code>.
      * 
-     * <p>Property <b>Position</b> (opendma): <b>Integer</b><br/>
-     * [SingleValue] [ReadOnly] [Required]<br/>
+     * <p>Property <b>SubFolders</b> (opendma): <b>Reference to Folder (opendma)</b><br/>
+     * [MultiValue] [ReadOnly] [NotRequired]<br/>
      * Full description follows.</p>
      * 
-     * @return the position of this element in the list of all content elements of the containing document
+     * @return the collection of <code>Folder</code>s which have this <code>Folder</code> in their parent property
      */
-    public Integer getPosition() {
+     @SuppressWarnings("unchecked")
+    public Iterable<OdmaFolder> getSubFolders() {
         try {
-            return getProperty(OdmaCommonNames.PROPERTY_POSITION).getInteger();
+            return (Iterable<OdmaFolder>)getProperty(OdmaCommonNames.PROPERTY_SUBFOLDERS).getReferenceIterable();
+        }
+        catch(ClassCastException cce) {
+            throw new OdmaRuntimeException("Invalid data type of system property",cce);
         }
         catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
