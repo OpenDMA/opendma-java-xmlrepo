@@ -1,5 +1,6 @@
 package com.xaldon.opendma.xmlrepo.objects;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -106,7 +107,7 @@ public class OdmaXmlObject implements OdmaObject
                 }
                 try
                 {
-                    prop = new OdmaPropertyImpl(pname,null,OdmaType.fromNumericId(pi.getDataType()),pi.isMultiValue().booleanValue(),pi.isReadOnly().booleanValue());
+                    prop = new OdmaPropertyImpl(pname,pi.isMultiValue().booleanValue()?new ArrayList<Object>(0):null,OdmaType.fromNumericId(pi.getDataType()),pi.isMultiValue().booleanValue(),pi.isReadOnly().booleanValue());
                     properties.put(pname,prop);
                 }
                 catch(OdmaInvalidDataTypeException e)
