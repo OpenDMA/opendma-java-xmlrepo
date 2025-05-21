@@ -48,7 +48,7 @@ public class OdmaXmlClass extends OdmaXmlObject implements OdmaClass
                 OdmaProperty old = properties.get(new OdmaQName("opendma","NameQualifier"));
                 try
                 {
-                    properties.put(OdmaCommonNames.PROPERTY_NAMESPACE, new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_NAMESPACE,old.getValue(),OdmaType.STRING,old.isMultiValue(),old.isReadOnly()));
+                    properties.put(OdmaCommonNames.PROPERTY_NAMESPACE, OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_NAMESPACE,old.getValue(),OdmaType.STRING,old.isMultiValue(),old.isReadOnly()));
                 }
                 catch (OdmaInvalidDataTypeException e)
                 {
@@ -63,7 +63,7 @@ public class OdmaXmlClass extends OdmaXmlObject implements OdmaClass
         // class hierarchy
         try
         {
-            properties.put(OdmaCommonNames.PROPERTY_SUBCLASSES,new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_SUBCLASSES,sch.getSubClasses(getQName()),OdmaType.REFERENCE,true,true));
+            properties.put(OdmaCommonNames.PROPERTY_SUBCLASSES,OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_SUBCLASSES,sch.getSubClasses(getQName()),OdmaType.REFERENCE,true,true));
         }
         catch(OdmaInvalidDataTypeException e)
         {
@@ -244,7 +244,7 @@ public class OdmaXmlClass extends OdmaXmlObject implements OdmaClass
                 }
             }
         }
-        properties.put(OdmaCommonNames.PROPERTY_PROPERTIES,new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_DECLAREDPROPERTIES,props,OdmaType.REFERENCE,true,true));
+        properties.put(OdmaCommonNames.PROPERTY_PROPERTIES,OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_DECLAREDPROPERTIES,props,OdmaType.REFERENCE,true,true));
     }
 
     public String toString()

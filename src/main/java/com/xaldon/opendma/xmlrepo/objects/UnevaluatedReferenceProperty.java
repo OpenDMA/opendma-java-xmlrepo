@@ -10,7 +10,7 @@ class UnevaluatedReferenceProperty extends OdmaPropertyImpl
 
     public UnevaluatedReferenceProperty(OdmaQName name, Object value, boolean multivalue, boolean readonly) throws OdmaInvalidDataTypeException
     {
-        super(name, value, OdmaType.ID, multivalue, readonly);
+        super(name, value, null, OdmaType.ID, multivalue, readonly);
     }
     
 }

@@ -66,9 +66,9 @@ public class OdmaXmlObjectData
     {
         try
         {
-            properties.put(OdmaCommonNames.PROPERTY_CLASS,new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_CLASS,cls,OdmaType.REFERENCE,false,true));
-            properties.put(OdmaCommonNames.PROPERTY_GUID,new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_GUID,guid,OdmaType.GUID,false,true));
-            properties.put(OdmaCommonNames.PROPERTY_REPOSITORY,new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_REPOSITORY,repository,OdmaType.REFERENCE,false,true));
+            properties.put(OdmaCommonNames.PROPERTY_CLASS,OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_CLASS,cls,OdmaType.REFERENCE,false,true));
+            properties.put(OdmaCommonNames.PROPERTY_GUID,OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_GUID,guid,OdmaType.GUID,false,true));
+            properties.put(OdmaCommonNames.PROPERTY_REPOSITORY,OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_REPOSITORY,repository,OdmaType.REFERENCE,false,true));
         }
         catch(OdmaInvalidDataTypeException e)
         {

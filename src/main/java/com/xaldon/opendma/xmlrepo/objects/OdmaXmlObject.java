@@ -107,7 +107,7 @@ public class OdmaXmlObject implements OdmaObject
                 }
                 try
                 {
-                    prop = new OdmaPropertyImpl(pname,pi.isMultiValue().booleanValue()?new ArrayList<Object>(0):null,OdmaType.fromNumericId(pi.getDataType()),pi.isMultiValue().booleanValue(),pi.isReadOnly().booleanValue());
+                    prop = OdmaPropertyImpl.fromValue(pname,pi.isMultiValue().booleanValue()?new ArrayList<Object>(0):null,OdmaType.fromNumericId(pi.getDataType()),pi.isMultiValue().booleanValue(),pi.isReadOnly().booleanValue());
                     properties.put(pname,prop);
                 }
                 catch(OdmaInvalidDataTypeException e)
@@ -175,7 +175,7 @@ public class OdmaXmlObject implements OdmaObject
                             }
                             resolvedList.add(referencedObject);
                         }
-                        propertiesEntry.setValue(new OdmaPropertyImpl(propertiesEntry.getKey(),resolvedList,OdmaType.REFERENCE,true,true));
+                        propertiesEntry.setValue(OdmaPropertyImpl.fromValue(propertiesEntry.getKey(),resolvedList,OdmaType.REFERENCE,true,true));
                     }
                     else
                     {
@@ -188,7 +188,7 @@ public class OdmaXmlObject implements OdmaObject
                                 throw new OdmaXmlRepositoryException("Reference to non existing object ID "+prop.getId());
                             }
                         }
-                        propertiesEntry.setValue(new OdmaPropertyImpl(propertiesEntry.getKey(),resolvedObject,OdmaType.REFERENCE,false,true));
+                        propertiesEntry.setValue(OdmaPropertyImpl.fromValue(propertiesEntry.getKey(),resolvedObject,OdmaType.REFERENCE,false,true));
                     }
                 }
                 catch(OdmaInvalidDataTypeException e)
@@ -311,6 +311,24 @@ public class OdmaXmlObject implements OdmaObject
             }
             test = test.getSuperClass();
         }
+        return false;
+    }
+
+    @Override
+    public Iterator<OdmaProperty> availableProperties()
+    {
+        return properties.values().iterator();
+    }
+
+    @Override
+    public boolean availablePropertiesComplete()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isEmbeddingRecommended()
+    {
         return false;
     }
 

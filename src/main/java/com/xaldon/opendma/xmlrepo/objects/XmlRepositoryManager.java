@@ -319,7 +319,7 @@ public class XmlRepositoryManager
                     }
                     try
                     {
-                        superClassProperty = new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_SUPERCLASS,parent,OdmaType.REFERENCE,false,true);
+                        superClassProperty = OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_SUPERCLASS,parent,OdmaType.REFERENCE,false,true);
                         p.put(OdmaCommonNames.PROPERTY_SUPERCLASS,superClassProperty);
                     }
                     catch(OdmaInvalidDataTypeException e)
@@ -353,7 +353,7 @@ public class XmlRepositoryManager
                     }
                     try
                     {
-                        aspectsProperty = new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_ASPECTS,aspects,OdmaType.REFERENCE,true,true);
+                        aspectsProperty = OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_ASPECTS,aspects,OdmaType.REFERENCE,true,true);
                         p.put(OdmaCommonNames.PROPERTY_ASPECTS,aspectsProperty);
                     }
                     catch(OdmaInvalidDataTypeException e)
@@ -703,7 +703,7 @@ public class XmlRepositoryManager
             {
                 try
                 {
-                    return new OdmaPropertyImpl(new OdmaQName(attrNamespace,attrName),null,dataType,false,true);
+                    return OdmaPropertyImpl.fromValue(new OdmaQName(attrNamespace,attrName),null,dataType,false,true);
                 }
                 catch(OdmaInvalidDataTypeException e)
                 {
@@ -720,7 +720,7 @@ public class XmlRepositoryManager
                     }
                     else
                     {
-                        return new OdmaPropertyImpl(new OdmaQName(attrNamespace,attrName),values.get(0),dataType,false,true);
+                        return OdmaPropertyImpl.fromValue(new OdmaQName(attrNamespace,attrName),values.get(0),dataType,false,true);
                     }
                 }
                 catch(OdmaInvalidDataTypeException e)
@@ -743,7 +743,7 @@ public class XmlRepositoryManager
                 }
                 else
                 {
-                    return new OdmaPropertyImpl(new OdmaQName(attrNamespace,attrName),values,dataType,true,true);
+                    return OdmaPropertyImpl.fromValue(new OdmaQName(attrNamespace,attrName),values,dataType,true,true);
                 }
             }
             catch(OdmaInvalidDataTypeException e)

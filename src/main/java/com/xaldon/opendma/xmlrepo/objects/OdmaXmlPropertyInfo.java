@@ -36,7 +36,7 @@ public class OdmaXmlPropertyInfo extends OdmaXmlObject implements OdmaPropertyIn
                 OdmaProperty old = properties.get(new OdmaQName("opendma","NameQualifier"));
                 try
                 {
-                    properties.put(OdmaCommonNames.PROPERTY_NAMESPACE, new OdmaPropertyImpl(OdmaCommonNames.PROPERTY_NAMESPACE,old.getValue(),OdmaType.STRING,old.isMultiValue(),old.isReadOnly()));
+                    properties.put(OdmaCommonNames.PROPERTY_NAMESPACE, OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_NAMESPACE,old.getValue(),OdmaType.STRING,old.isMultiValue(),old.isReadOnly()));
                 }
                 catch (OdmaInvalidDataTypeException e)
                 {

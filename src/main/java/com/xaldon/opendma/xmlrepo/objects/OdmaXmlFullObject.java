@@ -739,7 +739,7 @@ public class OdmaXmlFullObject extends OdmaXmlObject implements OdmaAssociation,
      * 
      * @return the BLOB value of this choice or null, if the property info this choice is assigned to is not of data type BLOB
      */
-    public String getBLOBValue() {
+    public String getBlobValue() {
         try {
             return getProperty(OdmaCommonNames.PROPERTY_BLOBVALUE).getString();
         }
@@ -765,7 +765,7 @@ public class OdmaXmlFullObject extends OdmaXmlObject implements OdmaAssociation,
      * @throws OdmaAccessDeniedException
      *             If this OdmaProperty is read-only or cannot be set by the current user
      */
-    public void setBLOBValue(String newValue) throws OdmaAccessDeniedException {
+    public void setBlobValue(String newValue) throws OdmaAccessDeniedException {
         try {
             getProperty(OdmaCommonNames.PROPERTY_BLOBVALUE).setValue(newValue);
         }
@@ -779,17 +779,20 @@ public class OdmaXmlFullObject extends OdmaXmlObject implements OdmaAssociation,
 
     /**
      * Returns the Reference value of this choice or null, if the property info this choice is assigned to is not of data type Reference.<br>
-     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_REFERENCEVALUE).getString()</code>.
+     * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_REFERENCEVALUE).getReference()</code>.
      * 
-     * <p>Property <b>ReferenceValue</b> (opendma): <b>String</b><br/>
+     * <p>Property <b>ReferenceValue</b> (opendma): <b>Reference to Object (opendma)</b><br/>
      * [SingleValue] [Writable] [NotRequired]<br/>
      * Full description follows.</p>
      * 
      * @return the Reference value of this choice or null, if the property info this choice is assigned to is not of data type Reference
      */
-    public String getReferenceValue() {
+    public OdmaObject getReferenceValue() {
         try {
-            return getProperty(OdmaCommonNames.PROPERTY_REFERENCEVALUE).getString();
+            return (OdmaObject)getProperty(OdmaCommonNames.PROPERTY_REFERENCEVALUE).getReference();
+        }
+        catch(ClassCastException cce) {
+            throw new OdmaRuntimeException("Invalid data type of system property",cce);
         }
         catch(OdmaInvalidDataTypeException oidte) {
             throw new OdmaRuntimeException("Invalid data type of system property",oidte);
@@ -803,7 +806,7 @@ public class OdmaXmlFullObject extends OdmaXmlObject implements OdmaAssociation,
      * Sets the Reference value of this choice or null, if the property info this choice is assigned to is not of data type Reference.<br>
      * Shortcut for <code>getProperty(OdmaTypes.PROPERTY_REFERENCEVALUE).setValue(value)</code>.
      * 
-     * <p>Property <b>ReferenceValue</b> (opendma): <b>String</b><br/>
+     * <p>Property <b>ReferenceValue</b> (opendma): <b>Reference to Object (opendma)</b><br/>
      * [SingleValue] [Writable] [NotRequired]<br/>
      * Full description follows.</p>
      * 
@@ -813,7 +816,7 @@ public class OdmaXmlFullObject extends OdmaXmlObject implements OdmaAssociation,
      * @throws OdmaAccessDeniedException
      *             If this OdmaProperty is read-only or cannot be set by the current user
      */
-    public void setReferenceValue(String newValue) throws OdmaAccessDeniedException {
+    public void setReferenceValue(OdmaObject newValue) throws OdmaAccessDeniedException {
         try {
             getProperty(OdmaCommonNames.PROPERTY_REFERENCEVALUE).setValue(newValue);
         }
