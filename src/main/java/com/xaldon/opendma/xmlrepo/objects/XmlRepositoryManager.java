@@ -116,24 +116,6 @@ public class XmlRepositoryManager
     public static final String ATTRIBUTENAME_TYPE = "type";
     
     public static final String ATTRIBUTENAME_MULTIVALUE = "multiValue";
-
-    protected static Map<String, OdmaType> datatypeValues = new HashMap<String, OdmaType>();
-    
-    static
-    {
-        datatypeValues.put("string",OdmaType.STRING);
-        datatypeValues.put("integer",OdmaType.INTEGER);
-        datatypeValues.put("short",OdmaType.SHORT);
-        datatypeValues.put("long",OdmaType.LONG);
-        datatypeValues.put("float",OdmaType.LONG);
-        datatypeValues.put("double",OdmaType.DOUBLE);
-        datatypeValues.put("boolean",OdmaType.BOOLEAN);
-        datatypeValues.put("datetime",OdmaType.DATETIME);
-        datatypeValues.put("blob",OdmaType.BLOB);
-        datatypeValues.put("reference",OdmaType.REFERENCE);
-        datatypeValues.put("content",OdmaType.CONTENT);
-        datatypeValues.put("id",OdmaType.ID);
-    }
     
     protected void parseRepository(Element rootElement) throws OdmaXmlRepositoryException
     {
@@ -661,10 +643,13 @@ public class XmlRepositoryManager
         {
             throw new OdmaXmlRepositoryException("Every Property element must have a non-empty type attribute");
         }
-        OdmaType dataType = datatypeValues.get(attrType.toLowerCase());
-        if(dataType == null)
+        OdmaType dataType;
+        try {
+            dataType = OdmaType.fromString(attrType);
+        }
+        catch(IllegalArgumentException iae)
         {
-            throw new OdmaXmlRepositoryException("The type attribute of every Property must only contain valid data types: "+attrType.toLowerCase());
+            throw new OdmaXmlRepositoryException("The type attribute of every Property must only contain valid data types: "+attrType);
         }
         // multivalue
         boolean multivalue = false;
