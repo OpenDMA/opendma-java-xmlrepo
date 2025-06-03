@@ -102,6 +102,8 @@ public class XmlRepositoryManager
     
     public static final String ELEMENTNAME_VALUE = "Value";
     
+    public static final String ATTRIBUTENAME_REPOSITORYID = "repositoryId";
+    
     public static final String ATTRIBUTENAME_REPOSITORYOBJECTID = "repositoryObjectId";
     
     public static final String ATTRIBUTENAME_CLASSQUALIFIER_DEPRECATED = "classQualifier";
@@ -133,6 +135,11 @@ public class XmlRepositoryManager
         {
             throw new OdmaXmlRepositoryException("Every OdmaXmlRepository must have a non-empty repositoryObjectId attribute");
         }
+        String repositoryId = rootElement.getAttribute(ATTRIBUTENAME_REPOSITORYID);
+        if( (repositoryId==null) || (repositoryId.length()==0) )
+        {
+            repositoryId = repositoryObjectId;
+        }
         // parse all contained objects
         ArrayList<OdmaXmlObjectData> objectDatas = new ArrayList<OdmaXmlObjectData>();
         NodeList rootChilds = rootElement.getChildNodes();
@@ -148,7 +155,7 @@ public class XmlRepositoryManager
             }
         }
         // build odma objects from object datas
-        buildObjects(objectDatas,repositoryObjectId);
+        buildObjects(objectDatas,repositoryId,repositoryObjectId);
     }
     
     protected OdmaStaticClassHierarchy classesHive;
@@ -163,7 +170,7 @@ public class XmlRepositoryManager
         OdmaObject obj = objects.get(id);
         if(obj == null)
         {
-            throw new OdmaObjectNotFoundException(new OdmaGuid(repository.getId(), id));
+            throw new OdmaObjectNotFoundException(new OdmaGuid(id,repository.getGuid().getRepositoryId()));
         }
         return obj;
     }
@@ -189,17 +196,17 @@ public class XmlRepositoryManager
     }
     
     @SuppressWarnings("unchecked")
-    protected void buildObjects(ArrayList<OdmaXmlObjectData> objectDatas, String repositoryObjectId) throws OdmaXmlRepositoryException
+    protected void buildObjects(ArrayList<OdmaXmlObjectData> objectDatas, String repositoryId, String repositoryObjectId) throws OdmaXmlRepositoryException
     {
         LinkedList<CreatedObject> allCreatedObjects = new LinkedList<CreatedObject>();
         boolean duplicateIdContinue = true;
         boolean hasDuplicateIds = false;
         // add core Odma objects
-        OdmaId repoId = new OdmaId(repositoryObjectId);
-        OdmaGuid repoGuid = new OdmaGuid(repoId,repoId);
+        OdmaId repoId = new OdmaId(repositoryId);
+        OdmaId repoObjId = new OdmaId(repositoryObjectId);
         try
         {
-            classesHive = new OdmaStaticClassHierarchy("Test","Test",repoId,repoGuid);
+            classesHive = new OdmaStaticClassHierarchy("Test","Test",repoId,repoObjId);
         }
         catch (OdmaInvalidDataTypeException e)
         {
@@ -275,7 +282,7 @@ public class XmlRepositoryManager
                 {
                     OdmaId classId = od.getId();
                     // manually set system controlled properties
-                    od.setSystemProperties(classClass, new OdmaGuid(repoId,classId), repository);
+                    od.setSystemProperties(classClass, new OdmaGuid(classId,repoId), repository);
                     CreatedObject createdObject = factoryCreateClass(od,classClass);
                     allCreatedObjects.add(createdObject);
                     OdmaClass clazz = (OdmaClass) createdObject.odmaObject;
@@ -445,7 +452,7 @@ public class XmlRepositoryManager
             // get ID
             OdmaId objectId = od.getId();
             // manually set system controlled properties
-            od.setSystemProperties(cls, new OdmaGuid(repoId,objectId), repository);
+            od.setSystemProperties(cls, new OdmaGuid(objectId,repoId), repository);
             // test if this is the repository object
             if(objectId.equals(repoId))
             {

@@ -103,7 +103,7 @@ public class XmlRepositorySession implements OdmaSession
         {
             return repoManager.getObject(objectId);
         }
-        throw new OdmaObjectNotFoundException(new OdmaGuid(repositoryId, objectId));
+        throw new OdmaObjectNotFoundException(new OdmaGuid(objectId, repositoryId));
     }
 
     public OdmaSearchResult search(OdmaId repositoryId, OdmaQName queryLanguage, String query) throws OdmaObjectNotFoundException, OdmaQuerySyntaxException
