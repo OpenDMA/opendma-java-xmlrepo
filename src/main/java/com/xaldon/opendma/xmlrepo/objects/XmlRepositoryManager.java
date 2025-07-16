@@ -220,7 +220,7 @@ public class XmlRepositoryManager
         classes.putAll(classesHive.getAllClassesByName());
         try
         {
-            repository = (OdmaRepository)classesHive.getObjectById(repoId);
+            repository = (OdmaRepository)classesHive.getObjectById(repoObjId);
         }
         catch(OdmaObjectNotFoundException e2)
         {
@@ -454,7 +454,7 @@ public class XmlRepositoryManager
             // manually set system controlled properties
             od.setSystemProperties(cls, new OdmaGuid(objectId,repoId), repository);
             // test if this is the repository object
-            if(objectId.equals(repoId))
+            if(objectId.equals(repoObjId))
             {
                 classesHive.updateRepositoryObject(od.getProperties());
                 objectDatas.set(i,null);

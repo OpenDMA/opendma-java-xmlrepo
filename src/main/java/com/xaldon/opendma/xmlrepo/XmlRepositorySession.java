@@ -78,7 +78,7 @@ public class XmlRepositorySession implements OdmaSession
             throw new OdmaException("Error reading file: "+filename, ioe);
         }
         repo = repoManager.getRepository();
-        repoId = repo.getId();
+        repoId = repo.getGuid().getRepositoryId();
         repoList = new ArrayList<OdmaId>(1);
         repoList.add(repoId);
     }
