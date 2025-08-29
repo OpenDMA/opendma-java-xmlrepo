@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -35,6 +36,8 @@ public class XmlRepositorySession implements OdmaSession
     protected OdmaId repoId;
     
     protected ArrayList<OdmaId> repoList;
+    
+    private final List<OdmaQName> supportedQueryLanguages;
     
     protected XmlRepositorySession(Properties info) throws OdmaException
     {
@@ -81,6 +84,7 @@ public class XmlRepositorySession implements OdmaSession
         repoId = repo.getGuid().getRepositoryId();
         repoList = new ArrayList<OdmaId>(1);
         repoList.add(repoId);
+        supportedQueryLanguages = Collections.unmodifiableList(new ArrayList<OdmaQName>(0));
     }
 
     public List<OdmaId> getRepositoryIds()
@@ -109,6 +113,12 @@ public class XmlRepositorySession implements OdmaSession
     public OdmaSearchResult search(OdmaId repositoryId, OdmaQName queryLanguage, String query) throws OdmaObjectNotFoundException, OdmaQuerySyntaxException
     {
     	throw new OdmaQuerySyntaxException("Unsupported query language: "+queryLanguage);
+    }
+
+    @Override
+    public List<OdmaQName> getSupportedQueryLanguages()
+    {
+        return supportedQueryLanguages;
     }
 
     public void close()

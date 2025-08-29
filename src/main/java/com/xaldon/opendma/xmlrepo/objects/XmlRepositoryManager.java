@@ -577,7 +577,7 @@ public class XmlRepositoryManager
                 }
             }
         }
-        classPostProcessingData.getProperties().put(OdmaCommonNames.PROPERTY_PROPERTIES,OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_DECLAREDPROPERTIES,props,OdmaType.REFERENCE,true,true));
+        classPostProcessingData.getProperties().put(OdmaCommonNames.PROPERTY_PROPERTIES,OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_PROPERTIES,props,OdmaType.REFERENCE,true,true));
     }
     
     private class CreatedObject
