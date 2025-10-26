@@ -769,6 +769,11 @@ public class XmlRepositoryManager
         {
             throw new OdmaXmlRepositoryException("Every Property element must have a non-empty type attribute");
         }
+        if("BLOB".equalsIgnoreCase(attrType))
+        {
+            // support xml files created by XML exporter prior to 0.8.0
+            attrType = "BINARY";
+        }
         OdmaType dataType;
         try
         {
@@ -973,7 +978,7 @@ public class XmlRepositoryManager
             {
                 throw new OdmaXmlRepositoryException("Invalid contents in value element of datetime property");
             }
-        case BLOB:
+        case BINARY:
             try
             {
                 return Base64Coder.decode(s);
