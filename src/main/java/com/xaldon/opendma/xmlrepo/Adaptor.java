@@ -1,9 +1,13 @@
 package com.xaldon.opendma.xmlrepo;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import org.opendma.api.OdmaAdaptor;
+import org.opendma.api.OdmaQName;
 import org.opendma.api.OdmaSession;
 import org.opendma.exceptions.OdmaException;
 
@@ -13,7 +17,14 @@ public class Adaptor implements OdmaAdaptor
 {
 
     public final static String SYSTEMID = "xmlrepo";
+    
+    private final List<OdmaQName> supportedTokenTypes;
+    
+    public Adaptor() {
+        supportedTokenTypes = Collections.unmodifiableList(new ArrayList<OdmaQName>(0));
+    }
 
+    @Override
     public OdmaSession connect(Properties info) throws OdmaException
     {
         try
@@ -55,19 +66,15 @@ public class Adaptor implements OdmaAdaptor
         return stream;
     }
     
+    @Override
     public String getSystemId()
     {
         return SYSTEMID;
     }
-    
-    /**
-     * Create a new OpenDMA Adaptor
-     * 
-     * @see java.util.ServiceLoader
-     */
-    public Adaptor()
-    {
-        // no-arg constructor is required for java services. See ServiceLoader documentation
+
+    @Override
+    public List<OdmaQName> getSupportedTokenTypes() {
+        return supportedTokenTypes;
     }
 
 }

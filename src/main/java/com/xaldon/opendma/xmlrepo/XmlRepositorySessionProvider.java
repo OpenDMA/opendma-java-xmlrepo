@@ -1,5 +1,6 @@
 package com.xaldon.opendma.xmlrepo;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.opendma.api.OdmaQName;
@@ -29,6 +30,7 @@ public class XmlRepositorySessionProvider implements OdmaSessionProvider
         this.filename = null;
     }
     
+    @Override
     public OdmaSession getSession()
     {
         Properties prop = new Properties();
@@ -50,14 +52,22 @@ public class XmlRepositorySessionProvider implements OdmaSessionProvider
         }
     }
 
+    @Override
     public OdmaSession getSessionForAccount(String username, String password)
     {
         return getSession();
     }
 
+    @Override
     public OdmaSession getSessionWithToken(OdmaQName tokenType, String token)
     {
         return getSession();
+    }
+
+    @Override
+    public List<OdmaQName> getSupportedTokenTypes()
+    {
+        return adaptor.getSupportedTokenTypes();
     }
 
 }
