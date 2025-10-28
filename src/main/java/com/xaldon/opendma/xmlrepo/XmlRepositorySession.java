@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.opendma.api.OdmaGuid;
 import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaObject;
 import org.opendma.api.OdmaQName;
@@ -30,8 +29,6 @@ public class XmlRepositorySession implements OdmaSession
     public final static int URLPREFIXLEN = URLPREFIX.length();
     
     protected XmlRepositoryManager repoManager;
-    
-    protected OdmaRepository repo;
     
     protected OdmaId repoId;
     
@@ -80,8 +77,7 @@ public class XmlRepositorySession implements OdmaSession
         {
             throw new OdmaException("Error reading file: "+filename, ioe);
         }
-        repo = repoManager.getRepository();
-        repoId = repo.getGuid().getRepositoryId();
+        repoId = repoManager.getRepoId();
         repoList = new ArrayList<OdmaId>(1);
         repoList.add(repoId);
         supportedQueryLanguages = Collections.unmodifiableList(new ArrayList<OdmaQName>(0));
@@ -96,9 +92,9 @@ public class XmlRepositorySession implements OdmaSession
     {
         if(repoId.equals(repositoryId))
         {
-            return repo;
+            return repoManager.getRepository();
         }
-        throw new OdmaObjectNotFoundException(new OdmaGuid(repositoryId, repositoryId));
+        throw new OdmaObjectNotFoundException(repositoryId);
     }
 
     public OdmaObject getObject(OdmaId repositoryId, OdmaId objectId, OdmaQName[] propertyNames) throws OdmaObjectNotFoundException
@@ -107,7 +103,7 @@ public class XmlRepositorySession implements OdmaSession
         {
             return repoManager.getObject(objectId);
         }
-        throw new OdmaObjectNotFoundException(new OdmaGuid(objectId, repositoryId));
+        throw new OdmaObjectNotFoundException(repositoryId);
     }
 
     public OdmaSearchResult search(OdmaId repositoryId, OdmaQName queryLanguage, String query) throws OdmaObjectNotFoundException, OdmaQuerySyntaxException
@@ -123,7 +119,7 @@ public class XmlRepositorySession implements OdmaSession
 
     public void close()
     {
-        repo = null;
+        repoManager = null;
         repoId = null;
         repoList.clear();
     }

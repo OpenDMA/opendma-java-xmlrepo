@@ -48,8 +48,17 @@ public class XmlRepositoryManager
     protected HashMap<OdmaId, OdmaObject> objects = new HashMap<OdmaId, OdmaObject>();
     
     protected HashMap<OdmaQName, OdmaClass> classes = new HashMap<OdmaQName, OdmaClass>();
+
+    protected OdmaId repoId;
+
+    protected OdmaId repoObjId;
     
     protected OdmaRepository repository;
+    
+    public OdmaId getRepoId()
+    {
+        return repoId;
+    }
     
     public OdmaRepository getRepository()
     {
@@ -155,7 +164,9 @@ public class XmlRepositoryManager
             }
         }
         // build odma objects from object datas
-        buildObjects(objectDatas,repositoryId,repositoryObjectId);
+        repoId = new OdmaId(repositoryId);
+        repoObjId = new OdmaId(repositoryObjectId);
+        buildObjects(objectDatas);
     }
     
     protected OdmaStaticClassHierarchy classesHive;
@@ -170,7 +181,7 @@ public class XmlRepositoryManager
         OdmaObject obj = objects.get(id);
         if(obj == null)
         {
-            throw new OdmaObjectNotFoundException(new OdmaGuid(id,repository.getGuid().getRepositoryId()));
+            throw new OdmaObjectNotFoundException(repoId, id);
         }
         return obj;
     }
@@ -196,14 +207,12 @@ public class XmlRepositoryManager
     }
     
     @SuppressWarnings("unchecked")
-    protected void buildObjects(ArrayList<OdmaXmlObjectData> objectDatas, String repositoryId, String repositoryObjectId) throws OdmaXmlRepositoryException
+    protected void buildObjects(ArrayList<OdmaXmlObjectData> objectDatas) throws OdmaXmlRepositoryException
     {
         LinkedList<CreatedObject> allCreatedObjects = new LinkedList<CreatedObject>();
         boolean duplicateIdContinue = true;
         boolean hasDuplicateIds = false;
         // add core Odma objects
-        OdmaId repoId = new OdmaId(repositoryId);
-        OdmaId repoObjId = new OdmaId(repositoryObjectId);
         try
         {
             classesHive = new OdmaStaticClassHierarchy("Test","Test",repoId,repoObjId);
