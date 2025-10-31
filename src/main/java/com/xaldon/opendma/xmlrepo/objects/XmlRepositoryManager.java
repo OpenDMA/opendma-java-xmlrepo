@@ -353,7 +353,7 @@ public class XmlRepositoryManager
                     }
                 }
                 // resolve aspects from ID to instance
-                OdmaPropertyImpl aspectsProperty = (OdmaPropertyImpl)p.get(OdmaCommonNames.PROPERTY_ASPECTS);
+                OdmaPropertyImpl aspectsProperty = (OdmaPropertyImpl)p.get(OdmaCommonNames.PROPERTY_INCLUDEDASPECTS);
                 if(aspectsProperty instanceof UnevaluatedReferenceProperty)
                 {
                     List<OdmaId> aspetIds;
@@ -378,8 +378,8 @@ public class XmlRepositoryManager
                     }
                     try
                     {
-                        aspectsProperty = OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_ASPECTS,aspects,OdmaType.REFERENCE,true,true);
-                        p.put(OdmaCommonNames.PROPERTY_ASPECTS,aspectsProperty);
+                        aspectsProperty = OdmaPropertyImpl.fromValue(OdmaCommonNames.PROPERTY_INCLUDEDASPECTS,aspects,OdmaType.REFERENCE,true,true);
+                        p.put(OdmaCommonNames.PROPERTY_INCLUDEDASPECTS,aspectsProperty);
                     }
                     catch(OdmaInvalidDataTypeException e)
                     {
@@ -541,7 +541,7 @@ public class XmlRepositoryManager
             }
         }
         // add all properties of all aspects
-        Iterable<OdmaClass> aspects = classPostProcessingData.getClazz().getAspects();
+        Iterable<OdmaClass> aspects = classPostProcessingData.getClazz().getIncludedAspects();
         if(aspects != null)
         {
             for(OdmaClass aspect : aspects)
@@ -603,7 +603,7 @@ public class XmlRepositoryManager
         OdmaClass test = cls;
         while(test != null) {
             noLoopTest.add(test.getQName());
-            for(OdmaClass a : test.getAspects()) {
+            for(OdmaClass a : test.getIncludedAspects()) {
                 classAndAspects.add(a);
             }
             test = test.getSuperClass();
