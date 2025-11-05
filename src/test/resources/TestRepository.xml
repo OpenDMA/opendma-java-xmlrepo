@@ -43,7 +43,7 @@
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassObject</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>TestObjectSubClass</Value></Property>
-        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"><Value>TestStringProperty</Value></Property>
         <Property qualifier="opendma" name="Aspect" type="boolean"><Value>false</Value></Property>
         <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
@@ -59,7 +59,7 @@
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>TestObjectSubClass</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>TestObjectSubSubClass</Value></Property>
-        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"><Value>opendmaClassFolder</Value></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"><Value>opendmaClassFolder</Value></Property>
         <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Aspect" type="boolean"><Value>false</Value></Property>
         <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
@@ -77,7 +77,7 @@
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>TestAspect</Value></Property>
-        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Aspect" type="boolean"><Value>true</Value></Property>
         <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
@@ -95,7 +95,7 @@
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassClass</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>TestClassSubClass</Value></Property>
-        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Aspect" type="boolean"><Value>false</Value></Property>
         <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
@@ -111,7 +111,7 @@
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>TestClassSubClass</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>TestClassSubSubClass</Value></Property>
-        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"><Value>TestAspect</Value></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"><Value>TestAspect</Value></Property>
         <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Aspect" type="boolean"><Value>false</Value></Property>
         <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
@@ -129,7 +129,7 @@
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassObject</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>TestObjectSubClass_TestClassSubClass</Value></Property>
-        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Aspect" type="boolean"><Value>false</Value></Property>
         <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
@@ -145,7 +145,7 @@
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>TestObjectSubClass_TestClassSubClass</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>TestObjectSubSubClass_TestClassSubClass</Value></Property>
-        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Aspect" type="boolean"><Value>false</Value></Property>
         <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
@@ -170,7 +170,7 @@
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassObject</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>Document</Value></Property>
-        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true">
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true">
             <Value>opendmaClassDocument</Value>
             <Value>opendmaClassContainable</Value>
         </Property>
@@ -189,7 +189,7 @@
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassObject</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>Folder</Value></Property>
-        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"><Value>opendmaClassFolder</Value></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"><Value>opendmaClassFolder</Value></Property>
         <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Aspect" type="boolean"><Value>false</Value></Property>
         <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
