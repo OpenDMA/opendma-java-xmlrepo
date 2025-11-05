@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -869,7 +870,7 @@ public class XmlRepositoryManager
                 }
                 else
                 {
-                    return OdmaPropertyImpl.fromValue(new OdmaQName(attrNamespace,attrName),values,dataType,true,true);
+                    return OdmaPropertyImpl.fromValue(new OdmaQName(attrNamespace,attrName),Collections.unmodifiableList(values),dataType,true,true);
                 }
             }
             catch(OdmaInvalidDataTypeException e)
