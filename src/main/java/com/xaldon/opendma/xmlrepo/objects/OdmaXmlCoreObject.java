@@ -26,10 +26,13 @@ import com.xaldon.opendma.xmlrepo.exceptions.OdmaXmlRepositoryException;
 public class OdmaXmlCoreObject implements OdmaCoreObject
 {
 
-    protected Map<OdmaQName, OdmaProperty> properties = null;
+    protected final Map<OdmaQName, OdmaProperty> properties;
     
-    protected OdmaClass cls = null;
+    protected final OdmaClass odmaClass;
     
+    protected final Iterable<OdmaClass> odmaAspects;
+    
+    @SuppressWarnings("unchecked")
     protected OdmaXmlCoreObject(Map<OdmaQName, OdmaProperty> props) throws OdmaXmlRepositoryException
     {
         properties = props;
@@ -53,13 +56,14 @@ public class OdmaXmlCoreObject implements OdmaCoreObject
         // get the class of this object
         try
         {
-            cls = (OdmaClass)props.get(OdmaCommonNames.PROPERTY_CLASS).getReference();
+            odmaClass = (OdmaClass)props.get(OdmaCommonNames.PROPERTY_CLASS).getReference();
+            odmaAspects = (Iterable<OdmaClass>)props.get(OdmaCommonNames.PROPERTY_ASPECTS).getReferenceIterable();
         }
         catch(Exception e)
         {
             throw new OdmaRuntimeException("Implementation error: invalid class property",e);
         }
-        if(cls == null)
+        if(odmaClass == null)
         {
             throw new OdmaRuntimeException("Implementation error: empty class property");
         }
@@ -79,7 +83,7 @@ public class OdmaXmlCoreObject implements OdmaCoreObject
             objectId = "(id-missing)";
         }
         // get the list of effective properties from class
-        Iterable<OdmaPropertyInfo> propertyInfos = cls.getProperties();
+        Iterable<OdmaPropertyInfo> propertyInfos = odmaClass.getProperties();
         if(propertyInfos == null)
         {
             throw new OdmaRuntimeException("Implementation error: missing property infos at class");
@@ -216,7 +220,7 @@ public class OdmaXmlCoreObject implements OdmaCoreObject
     }
 
     public boolean instanceOf(OdmaQName classOrAspectName) {
-        OdmaClass test = cls;
+        OdmaClass test = odmaClass;
         while(test != null) {
             if(test.getQName().equals(classOrAspectName)) {
                 return true;
@@ -232,6 +236,14 @@ public class OdmaXmlCoreObject implements OdmaCoreObject
                 }
             }
             test = test.getSuperClass();
+        }
+        for(OdmaClass testAspect : odmaAspects) {
+            while(testAspect != null) {
+                if(testAspect.getQName().equals(classOrAspectName)) {
+                    return true;
+                }
+                testAspect = testAspect.getSuperClass();
+            }
         }
         return false;
     }
