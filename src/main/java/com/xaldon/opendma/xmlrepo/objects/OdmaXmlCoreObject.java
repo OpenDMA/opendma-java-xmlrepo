@@ -30,9 +30,8 @@ public class OdmaXmlCoreObject implements OdmaCoreObject
     
     protected final OdmaClass odmaClass;
     
-    protected final Iterable<OdmaClass> odmaAspects;
+    protected Iterable<OdmaClass> odmaAspects;
     
-    @SuppressWarnings("unchecked")
     protected OdmaXmlCoreObject(Map<OdmaQName, OdmaProperty> props) throws OdmaXmlRepositoryException
     {
         properties = props;
@@ -57,7 +56,6 @@ public class OdmaXmlCoreObject implements OdmaCoreObject
         try
         {
             odmaClass = (OdmaClass)props.get(OdmaCommonNames.PROPERTY_CLASS).getReference();
-            odmaAspects = (Iterable<OdmaClass>)props.get(OdmaCommonNames.PROPERTY_ASPECTS).getReferenceIterable();
         }
         catch(Exception e)
         {
@@ -219,6 +217,7 @@ public class OdmaXmlCoreObject implements OdmaCoreObject
         // nothing to do here
     }
 
+    @SuppressWarnings("unchecked")
     public boolean instanceOf(OdmaQName classOrAspectName) {
         OdmaClass test = odmaClass;
         while(test != null) {
@@ -236,6 +235,16 @@ public class OdmaXmlCoreObject implements OdmaCoreObject
                 }
             }
             test = test.getSuperClass();
+        }
+        if(odmaAspects == null) {
+            try
+            {
+                odmaAspects = (Iterable<OdmaClass>)properties.get(OdmaCommonNames.PROPERTY_ASPECTS).getReferenceIterable();
+            }
+            catch(Exception e)
+            {
+                throw new OdmaRuntimeException("Implementation error: invalid class property",e);
+            }
         }
         for(OdmaClass testAspect : odmaAspects) {
             while(testAspect != null) {
