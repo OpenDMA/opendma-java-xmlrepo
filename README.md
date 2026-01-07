@@ -55,3 +55,35 @@ absolute path of a xml resource on the classpath
 
 `enforceRequired`  
 boolean flag (`true` or `false`) to fail on missing mandatory properties (default `false`)
+
+## File format
+
+OpenDMA objects are stored as `OdmaObject` elements with a list of `Property` child elements:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<OdmaXmlRepository repositoryId="sample-repo" repositoryObjectId="sample-repo-object">
+
+  <OdmaObject classNamespace="tutorial" className="SampleRepositoryClass">
+    <Property qualifier="opendma" name="Id" type="id"><Value>sample-repo-object</Value></Property>
+    <Property qualifier="opendma" name="Aspects" type="reference"></Property>
+    <Property qualifier="opendma" name="Name" type="string"><Value>SampleRepository</Value></Property>
+    <Property qualifier="opendma" name="DisplayName" type="string"><Value>Sample Repository for Tutorials</Value></Property>
+    <Property qualifier="opendma" name="RootFolder" type="reference"><Value>sample-folder-root</Value></Property>
+    <Property qualifier="tutorial" name="RepositoryName" type="string"><Value>SampleRepository</Value></Property>
+    <Property qualifier="tutorial" name="SampleString" type="string"><Value>Some sample string value</Value></Property>
+    <Property qualifier="tutorial" name="SampleInteger" type="integer"><Value>123</Value></Property>
+  </OdmaObject>
+
+</OdmaXmlRepository>
+```
+
+Each `Property` contains a list of `Value` elements. Multi valued properties can
+contain multiple values:
+```xml
+<Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true">
+  <Value>sample-repo-name</Value>
+  <Value>sample-repo-string</Value>
+  <Value>sample-repo-integer</Value>
+</Property>
+```
