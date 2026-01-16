@@ -5,16 +5,19 @@
 
     <OdmaObject classNamespace="opendma" className="Object">
         <Property qualifier="opendma" name="Id" type="id"><Value>test1</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
     </OdmaObject>
 
     <OdmaObject classNamespace="opendma" className="Object">
         <Property qualifier="opendma" name="Id" type="id"><Value>test2</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
     </OdmaObject>
     
     <!-- The repository instance -->
 
     <OdmaObject classNamespace="opendma" className="Repository">
         <Property qualifier="opendma" name="Id" type="id"><Value>testRepository</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>testRepository</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>My first test repository</Value></Property>
         <Property qualifier="opendma" name="RootFolder" type="reference"><Value>RootFolder</Value></Property>
@@ -24,6 +27,7 @@
     
     <OdmaObject classNamespace="opendma" className="PropertyInfo">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestStringProperty</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>TestStringProperty</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="DisplayName" type="string"><Value>TestStringProperty</Value></Property>
@@ -39,6 +43,7 @@
 
     <OdmaObject classNamespace="opendma" className="Class">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestObjectSubClass</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>TestObjectSubClass</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassObject</Value></Property>
@@ -55,6 +60,7 @@
 
     <OdmaObject classNamespace="opendma" className="Class">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestObjectSubSubClass</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>TestObjectSubSubClass</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>TestObjectSubClass</Value></Property>
@@ -73,6 +79,7 @@
 
     <OdmaObject classNamespace="opendma" className="Class">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestAspect</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>TestAspect</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"></Property>
@@ -91,6 +98,7 @@
 
     <OdmaObject classNamespace="opendma" className="Class">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestClassSubClass</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>TestClassSubClass</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassClass</Value></Property>
@@ -107,6 +115,7 @@
 
     <OdmaObject classNamespace="opendma" className="Class">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestClassSubSubClass</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>TestClassSubSubClass</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>TestClassSubClass</Value></Property>
@@ -125,6 +134,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="TestClassSubClass">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestObjectSubClass_TestClassSubClass</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>TestObjectSubClass_TestClassSubClass</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassObject</Value></Property>
@@ -141,6 +151,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="TestClassSubClass">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestObjectSubSubClass_TestClassSubClass</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>TestObjectSubSubClass_TestClassSubClass</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>TestObjectSubClass_TestClassSubClass</Value></Property>
@@ -159,6 +170,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="TestObjectSubClass">
         <Property qualifier="opendma" name="Id" type="id"><Value>instance1</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="TestRepo" name="TestStringProperty" type="string"><Value>Hello, world!</Value></Property>
     </OdmaObject>
 
@@ -166,6 +178,7 @@
 
     <OdmaObject classNamespace="opendma" className="Class">
         <Property qualifier="opendma" name="Id" type="id"><Value>Document</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>Document</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassObject</Value></Property>
@@ -185,6 +198,7 @@
 
     <OdmaObject classNamespace="opendma" className="Class">
         <Property qualifier="opendma" name="Id" type="id"><Value>Folder</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Name" type="string"><Value>Folder</Value></Property>
         <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
         <Property qualifier="opendma" name="SuperClass" type="reference"><Value>opendmaClassObject</Value></Property>
@@ -203,6 +217,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>RootFolder</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>ROOT</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"><Value>TestA</Value><Value>TestB</Value><Value>TestC</Value></Property>
@@ -215,6 +230,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestA</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>TestA</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"><Value>TestA1</Value><Value>TestA2</Value></Property>
@@ -227,6 +243,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestB</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>TestB</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"><Value>TestB1</Value><Value>TestB2</Value></Property>
@@ -239,6 +256,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestC</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>TestC</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"><Value>TestC1</Value><Value>TestC2</Value></Property>
@@ -251,6 +269,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestA1</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>TestA1</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"></Property>
@@ -263,6 +282,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestA2</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>TestA2</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"></Property>
@@ -275,6 +295,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestB1</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>TestB1</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"></Property>
@@ -287,6 +308,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestB2</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>TestB2</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"></Property>
@@ -299,6 +321,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestC1</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>TestC1</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"></Property>
@@ -311,6 +334,7 @@
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>TestC2</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>TestC2</Value></Property>
         <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"></Property>
