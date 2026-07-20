@@ -150,6 +150,8 @@ public class XmlRepositoryManager
         {
             repositoryId = repositoryObjectId;
         }
+        repoId = new OdmaId(repositoryId);
+        repoObjId = new OdmaId(repositoryObjectId);
         // parse all contained objects
         ArrayList<OdmaXmlObjectData> objectDatas = new ArrayList<OdmaXmlObjectData>();
         NodeList rootChilds = rootElement.getChildNodes();
@@ -165,8 +167,6 @@ public class XmlRepositoryManager
             }
         }
         // build odma objects from object datas
-        repoId = new OdmaId(repositoryId);
-        repoObjId = new OdmaId(repositoryObjectId);
         buildObjects(objectDatas);
     }
     
@@ -1003,6 +1003,8 @@ public class XmlRepositoryManager
             return new OdmaXmlFileContent(s);
         case ID:
             return new OdmaId(s);
+        case GUID:
+            return new OdmaGuid(new OdmaId(s), this.repoId);
         default:
             throw new OdmaXmlRepositoryException("Implementation error: unknown data type");
         }
