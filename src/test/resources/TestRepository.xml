@@ -174,7 +174,7 @@
         <Property qualifier="TestRepo" name="TestStringProperty" type="string"><Value>Hello, world!</Value></Property>
     </OdmaObject>
 
-    <!-- Document and Folder classes as subclass of opendma:Object; defined as opendma:Class -->
+    <!-- Document classes as subclass of opendma:Object; defined as opendma:Class -->
 
     <OdmaObject classNamespace="opendma" className="Class">
         <Property qualifier="opendma" name="Id" type="id"><Value>Document</Value></Property>
@@ -196,6 +196,8 @@
         <Property qualifier="opendma" name="System" type="boolean"><Value>false</Value></Property>
     </OdmaObject>
 
+    <!-- Folder classes as subclass of opendma:Object; defined as opendma:Class -->
+
     <OdmaObject classNamespace="opendma" className="Class">
         <Property qualifier="opendma" name="Id" type="id"><Value>Folder</Value></Property>
         <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
@@ -213,15 +215,53 @@
         <Property qualifier="opendma" name="System" type="boolean"><Value>false</Value></Property>
     </OdmaObject>
     
+    <!-- VersionCollection classes as subclass of opendma:Object; defined as opendma:Class -->
+
+    <OdmaObject classNamespace="opendma" className="Class">
+        <Property qualifier="opendma" name="Id" type="id"><Value>VersionCollection</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="Name" type="string"><Value>VersionCollection</Value></Property>
+        <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
+        <Property qualifier="opendma" name="Parent" type="reference"><Value>opendmaClassObject</Value></Property>
+        <Property qualifier="opendma" name="DisplayName" type="string"><Value>VersionCollection</Value></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"><Value>opendmaClassVersionCollection</Value></Property>
+        <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="Aspect" type="boolean"><Value>false</Value></Property>
+        <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
+        <Property qualifier="opendma" name="Retrievable" type="boolean"><Value>true</Value></Property>
+        <Property qualifier="opendma" name="Searchable" type="boolean"><Value>true</Value></Property>
+        <Property qualifier="opendma" name="Hidden" type="boolean"><Value>false</Value></Property>
+        <Property qualifier="opendma" name="System" type="boolean"><Value>false</Value></Property>
+    </OdmaObject>
+    
+    <!-- Association classes as subclass of opendma:Object; defined as opendma:Class -->
+
+    <OdmaObject classNamespace="opendma" className="Class">
+        <Property qualifier="opendma" name="Id" type="id"><Value>Association</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="Name" type="string"><Value>Association</Value></Property>
+        <Property qualifier="opendma" name="Namespace" type="string"><Value>TestRepo</Value></Property>
+        <Property qualifier="opendma" name="Parent" type="reference"><Value>opendmaClassObject</Value></Property>
+        <Property qualifier="opendma" name="DisplayName" type="string"><Value>Association</Value></Property>
+        <Property qualifier="opendma" name="IncludedAspects" type="reference" multiValue="true"><Value>opendmaClassAssociation</Value></Property>
+        <Property qualifier="opendma" name="DeclaredProperties" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="Aspect" type="boolean"><Value>false</Value></Property>
+        <Property qualifier="opendma" name="Instantiable" type="boolean"><Value>true</Value></Property>
+        <Property qualifier="opendma" name="Retrievable" type="boolean"><Value>true</Value></Property>
+        <Property qualifier="opendma" name="Searchable" type="boolean"><Value>true</Value></Property>
+        <Property qualifier="opendma" name="Hidden" type="boolean"><Value>false</Value></Property>
+        <Property qualifier="opendma" name="System" type="boolean"><Value>false</Value></Property>
+    </OdmaObject>
+    
     <!-- Directory structure made up of [TestRepo, Folder] and [TestRepo, Document] -->
 
     <OdmaObject classNamespace="TestRepo" className="Folder">
         <Property qualifier="opendma" name="Id" type="id"><Value>RootFolder</Value></Property>
         <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
         <Property qualifier="opendma" name="Title" type="string"><Value>ROOT</Value></Property>
-        <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="Containees" type="reference" multiValue="true"><Value>TestDoc1</Value></Property>
         <Property qualifier="opendma" name="SubFolders" type="reference" multiValue="true"><Value>TestA</Value><Value>TestB</Value><Value>TestC</Value></Property>
-        <Property qualifier="opendma" name="Associations" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="Associations" type="reference" multiValue="true"><Value>TestDoc1Association</Value></Property>
         <Property qualifier="opendma" name="CreatedAt" type="datetime">2010-01-01 00:00:00</Property>
         <Property qualifier="opendma" name="LastModifiedAt" type="datetime">2010-01-01 00:00:00</Property>
         <Property qualifier="opendma" name="CreatedBy" type="string">SYSTEM</Property>
@@ -343,6 +383,49 @@
         <Property qualifier="opendma" name="LastModifiedAt" type="datetime">2010-01-01 00:00:00</Property>
         <Property qualifier="opendma" name="CreatedBy" type="string">SYSTEM</Property>
         <Property qualifier="opendma" name="LastModifiedBy" type="string">SYSTEM</Property>
+    </OdmaObject>
+
+    <OdmaObject classNamespace="TestRepo" className="Document">
+        <Property qualifier="opendma" name="Id" type="id"><Value>TestDoc1</Value></Property>
+        <Property qualifier="opendma" name="VersionIndependentId" type="id"><Value>VersionIndependentTestDoc1</Value></Property>
+        <Property qualifier="opendma" name="VersionIndependentGuid" type="guid"><Value>VersionIndependentTestDoc1</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="Title" type="string"><Value>Hello, World!</Value></Property>
+        <Property qualifier="opendma" name="Version" type="string"><Value>1.0</Value></Property>
+        <Property qualifier="opendma" name="VersionCollection" type="reference"><Value>TestDoc1VersionCollection</Value></Property>
+        <Property qualifier="opendma" name="ContentElements" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="CombinedContentType" type="string"></Property>
+        <Property qualifier="opendma" name="PrimaryContentElement" type="reference"></Property>
+        <Property qualifier="opendma" name="CreatedAt" type="datetime"><Value>2010-01-01 00:00:00</Value></Property>
+        <Property qualifier="opendma" name="CreatedBy" type="string"><Value>SYSTEM</Value></Property>
+        <Property qualifier="opendma" name="LastModifiedAt" type="datetime"><Value>2010-01-01 00:00:00</Value></Property>
+        <Property qualifier="opendma" name="LastModifiedBy" type="string"><Value>SYSTEM</Value></Property>
+        <Property qualifier="opendma" name="CheckedOut" type="boolean"><Value>false</Value></Property>
+        <Property qualifier="opendma" name="CheckedOutAt" type="datetime"></Property>
+        <Property qualifier="opendma" name="CheckedOutBy" type="string"></Property>
+        <Property qualifier="opendma" name="ContainedIn" type="reference" multiValue="true"><Value>RootFolder</Value></Property>
+        <Property qualifier="opendma" name="ContainedInAssociations" type="reference" multiValue="true"><Value>TestDoc1Association</Value></Property>
+    </OdmaObject>
+
+    <OdmaObject classNamespace="TestRepo" className="Association">
+        <Property qualifier="opendma" name="Id" type="id"><Value>TestDoc1Association</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="Name" type="string"><Value>HelloWorld.txt</Value></Property>
+        <Property qualifier="opendma" name="Container" type="reference"><Value>RootFolder</Value></Property>
+        <Property qualifier="opendma" name="Containable" type="reference"><Value>TestDoc1</Value></Property>
+        <Property qualifier="opendma" name="CreatedAt" type="datetime"><Value>2010-01-01 00:00:00</Value></Property>
+        <Property qualifier="opendma" name="CreatedBy" type="string"><Value>SYSTEM</Value></Property>
+        <Property qualifier="opendma" name="LastModifiedAt" type="datetime"><Value>2010-01-01 00:00:00</Value></Property>
+        <Property qualifier="opendma" name="LastModifiedBy" type="string"><Value>SYSTEM</Value></Property>
+    </OdmaObject>
+
+    <OdmaObject classNamespace="TestRepo" className="VersionCollection">
+        <Property qualifier="opendma" name="Id" type="id"><Value>TestDoc1VersionCollection</Value></Property>
+        <Property qualifier="opendma" name="Aspects" type="reference" multiValue="true"></Property>
+        <Property qualifier="opendma" name="Versions" type="reference" multiValue="true"><Value>TestDoc1</Value></Property>
+        <Property qualifier="opendma" name="Latest" type="reference"><Value>TestDoc1</Value></Property>
+        <Property qualifier="opendma" name="Released" type="reference"><Value>TestDoc1</Value></Property>
+        <Property qualifier="opendma" name="InProgress" type="reference"></Property>
     </OdmaObject>
 
 </OdmaXmlRepository>
